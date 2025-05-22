@@ -126,7 +126,7 @@ public class InventoryDashboardPage extends UIBase {
         return topPanel;
     }
 
-    private JPanel createGridContent() {
+      private JPanel createGridContent() {
         JPanel contentPanel = new JPanel(new GridLayout(2, 3, 20, 20));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         contentPanel.setBackground(Color.WHITE);
@@ -156,22 +156,34 @@ public class InventoryDashboardPage extends UIBase {
         }));
 
         contentPanel.add(createCard("View\nStock\nHistory", () -> {
-            // TODO: Create StockHistoryPage
-            JOptionPane.showMessageDialog(this, "Stock History Page coming soon!");
+            dispose();
+            SwingUtilities.invokeLater(() -> {
+                StockHistoryPage stockHistoryPage = new StockHistoryPage(currentUser);
+                stockHistoryPage.setVisible(true);
+            });
         }));
 
         contentPanel.add(createCard("Generate\nStock\nReports", () -> {
-            // TODO: Create GenerateStockReportsPage
-            JOptionPane.showMessageDialog(this, "Generate Stock Reports Page coming soon!");
+            dispose();
+            SwingUtilities.invokeLater(() -> {
+                StockReportPage reportPage = new StockReportPage(currentUser);
+                reportPage.setVisible(true);
+            });
         }));
+
 
         contentPanel.add(createCard("View\nSystem\nLogs", () -> {
             dispose();
-            new admin.SystemLogsPage(currentUser).setVisible(true);
+            SwingUtilities.invokeLater(() -> {
+                ViewInventoryLogsPage logsPage = new ViewInventoryLogsPage(currentUser);
+                logsPage.setVisible(true);
+            });
         }));
+
 
         return contentPanel;
     }
+
 
     private JPanel createCard(String labelText, Runnable onClick) {
         JPanel card = new JPanel(new BorderLayout());
