@@ -1,8 +1,6 @@
 import admin.DashboardPage;
 import database.DatabaseHelper;
 import finance.FinanceDashboardPage;
-import purchase.PurchaseDashboardPage;
-import sales.SalesDashboardPage;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -12,6 +10,8 @@ import java.io.IOException;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import models.User;
+import purchase.PurchaseDashboardPage;
+import sales.SalesDashboardPage;
 
 public class LoginPage extends UIBase {
     public static final String APP_TITLE = "Automated Purchase Order Management System";

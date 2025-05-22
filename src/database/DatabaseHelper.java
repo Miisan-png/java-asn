@@ -1258,8 +1258,7 @@ public class DatabaseHelper {
     }
 
     public void addManagePurchaseOrdersPage(ManagePurchaseOrdersPage newPO) {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-    
 
 }  
