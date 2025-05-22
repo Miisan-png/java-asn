@@ -6,4 +6,4 @@ U002,s,s,sha@gmail.com,SAL
 U003,z,zzzzzz1!,zz@gmail.com,PUR
 U004,z,zz,zzee@email,PUR
 U005,f,f,ff@gmail.com,FIN
-U006,h,h,ham@gmail.com,INV
+U006,h,h,hamzan@gmail.com,INV

@@ -1,8 +1,8 @@
 package admin;
 
+import database.DatabaseHelper;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -13,7 +13,6 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -26,10 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
-
-import finance.FinanceDashboardPage;
 import models.User;
-import database.DatabaseHelper;
 
 public class MyProfilePage extends UIBase {
 
@@ -41,8 +37,8 @@ public class MyProfilePage extends UIBase {
     private JPasswordField confirmPasswordField;
 
     public MyProfilePage(User user) {
-        super("My Profile");
-        this.currentUser = user;
+    super("My Profile");
+    this.currentUser = user;
     }
 
     @Override
@@ -155,9 +151,9 @@ public class MyProfilePage extends UIBase {
         bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(bell);
 
-        String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
-                ? currentUser.getUsername()
-                : "Admin";
+       String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
+        ? currentUser.getUsername()
+        : "User";
 
         JLabel userLabel = new JLabel(displayName + " ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -427,12 +423,27 @@ public class MyProfilePage extends UIBase {
 
     protected void goBackToDashboard() {
     dispose();
-    SwingUtilities.invokeLater(() -> {
-        if (User.ROLE_FINANCE_MANAGER.equals(currentUser.getRole())) {
-            new finance.FinanceDashboardPage(currentUser).setVisible(true);
-        } else {
-            new DashboardPage(currentUser).setVisible(true);
-        }
-    });
+        SwingUtilities.invokeLater(() -> {
+            switch (currentUser.getRole()) {
+                case User.ROLE_ADMINISTRATOR:
+                    new admin.DashboardPage(currentUser).setVisible(true);
+                    break;
+                case User.ROLE_INVENTORY_MANAGER:
+                    new inv.InventoryDashboardPage(currentUser).setVisible(true);
+                    break;
+                case User.ROLE_PURCHASE_MANAGER:
+                    new purchase.PurchaseDashboardPage(currentUser).setVisible(true);
+                    break;
+                case User.ROLE_FINANCE_MANAGER:
+                    new finance.FinanceDashboardPage(currentUser).setVisible(true);
+                    break;
+                case User.ROLE_SALES_MANAGER:
+                    new sales.SalesDashboardPage(currentUser).setVisible(true);
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Unrecognized role: " + currentUser.getRole());
+                    System.exit(1);
+            }
+        });
     }
 }
