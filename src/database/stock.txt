@@ -1,4 +1,4 @@
 itemCode,itemName,quantity,location,lastUpdated,status
-ITEM001,Office Chair,25,Warehouse A,2025-05-14,In Stock
-ITEM002,Desk Lamp,8,Warehouse B,2025-05-14,Low Stock
+ITEM001,Office Chair,50,Warehouse A,2025-05-23,In Stock
+ITEM002,Desk Lamp,30,Warehouse B,2025-05-23,In Stock
 ITEM003,Filing Cabinet,0,Warehouse A,2025-05-14,Out of Stock

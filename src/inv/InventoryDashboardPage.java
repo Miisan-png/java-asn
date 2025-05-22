@@ -133,17 +133,26 @@ public class InventoryDashboardPage extends UIBase {
 
         contentPanel.add(createCard("View\nCurrent\nStock", () -> {
             dispose();
-            new admin.StockReportsPage(currentUser).setVisible(true);
+            SwingUtilities.invokeLater(() -> {
+                ViewCurrentStockPage viewStockPage = new ViewCurrentStockPage(currentUser);
+                viewStockPage.setVisible(true);
+            });
         }));
 
         contentPanel.add(createCard("Update\nStock\nLevels", () -> {
-            // TODO: Create UpdateStockPage
-            JOptionPane.showMessageDialog(this, "Update Stock Page coming soon!");
-        })); 
+            dispose();
+            SwingUtilities.invokeLater(() -> {
+                UpdateStockPage updateStockPage = new UpdateStockPage(currentUser);
+                updateStockPage.setVisible(true);
+            });
+        }));
 
         contentPanel.add(createCard("Manual\nStock\nAdjustment", () -> {
-            // TODO: Create ManualStockAdjustmentPage
-            JOptionPane.showMessageDialog(this, "Manual Stock Adjustment Page coming soon!");
+            dispose();
+            SwingUtilities.invokeLater(() -> {
+                ManualStockAdjustmentPage adjustmentPage = new ManualStockAdjustmentPage(currentUser);
+                adjustmentPage.setVisible(true);
+            });
         }));
 
         contentPanel.add(createCard("View\nStock\nHistory", () -> {
