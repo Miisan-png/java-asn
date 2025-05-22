@@ -3,24 +3,24 @@ package sales;
 
 import admin.UIBase;
 import database.DatabaseHelper;
-import models.PurchaseRequisition;
-import models.User;
-import models.Item; // Assuming Item model is needed to fetch supplier ID
-import models.SystemLog;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDate; // Assuming Item model is needed to fetch supplier ID
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import models.Item;
+import models.PurchaseRequisition;
+import models.SystemLog;
+import models.User;
 
 public class CreateRequisitionPage extends UIBase {
 
     private final User currentUser;
     private JTextField itemCodeField, quantityField, deliveryDateField, supplierCodeField;
 
+  
     public CreateRequisitionPage(User user) {
         super("Create Purchase Requisition");
         this.currentUser = user;
@@ -244,26 +244,38 @@ public class CreateRequisitionPage extends UIBase {
         itemCodeField.addActionListener(e -> populateSupplierCode());
 
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
         buttonPanel.setBackground(Color.WHITE);
 
+        GridBagConstraints btnGbc = new GridBagConstraints();
+        btnGbc.insets = new Insets(10, 20, 10, 20);
+        btnGbc.gridy = 0;
+
+        // Save button (left)
+        btnGbc.gridx = 0;
+        btnGbc.anchor = GridBagConstraints.WEST;
         JButton saveButton = new JButton("Save");
         styleButton(saveButton);
         saveButton.addActionListener(e -> handleSaveRequisition());
-        buttonPanel.add(saveButton);
+        buttonPanel.add(saveButton, btnGbc);
 
-        JButton resetButton = new JButton("Reset");
-        styleButton(resetButton);
-        resetButton.addActionListener(e -> handleResetForm());
-        buttonPanel.add(resetButton);
+        // Check Supplier button (right)
+        btnGbc.gridx = 1;
+        btnGbc.anchor = GridBagConstraints.EAST;
+        JButton checkSupplierBtn = new JButton("Check Supplier");
+        styleButton(checkSupplierBtn);
+        checkSupplierBtn.addActionListener(e -> populateSupplierCode());
+        buttonPanel.add(checkSupplierBtn, btnGbc);
 
-
+        // Add to contentPanel using GridBagConstraints
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.NONE;
         contentPanel.add(buttonPanel, gbc);
+
 
         return contentPanel;
     }
