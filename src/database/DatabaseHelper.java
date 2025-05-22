@@ -12,16 +12,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import models.Financial;
 import models.Item;
 import models.PurchaseOrder;
 import models.PurchaseRequisition;
-import models.User;
-import models.Stock;
-import models.Financial;
-import models.SystemLog;
 import models.SalesEntry;
+import models.Stock;
 import models.Supplier;
+import models.SystemLog;
+import models.User;
 import purchase.ManagePurchaseOrdersPage;
 
 public class DatabaseHelper {
@@ -1260,5 +1259,98 @@ public class DatabaseHelper {
     public void addManagePurchaseOrdersPage(ManagePurchaseOrdersPage newPO) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+
+    public void addInventoryLog(SystemLog log) throws IOException {
+    File file = new File(DATA_DIRECTORY + "/inventory_log.txt");
+    file.getParentFile().mkdirs();
+
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+        writer.write(String.format("%s,%s,%s,%s,%s,%s,%s",
+                log.getLogId(),
+                log.getUserId(),
+                log.getUsername(),
+                log.getAction(),
+                log.getDetails(),
+                log.getTimestamp().format(LOG_DATE_FORMATTER),
+                log.getUserRole()
+        ));
+        writer.newLine();
+    }
+}
+
+public List<SystemLog> getInventoryLogs() throws IOException {
+    List<SystemLog> logs = new ArrayList<>();
+    File file = new File(DATA_DIRECTORY + "/inventory_log.txt");
+
+    if (!file.exists()) {
+        return logs;
+    }
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        String line;
+        boolean firstLine = true;
+
+        while ((line = reader.readLine()) != null) {
+            if (firstLine) {
+                firstLine = false;
+                continue;
+            }
+
+            String[] parts = line.split(",");
+            if (parts.length >= 7) {
+                try {
+                    SystemLog log = new SystemLog(
+                            parts[0],      // logId
+                            parts[1],      // userId
+                            parts[2],      // username
+                            parts[3],      // action
+                            parts[4],      // details
+                            parts[5],      // timestamp
+                            parts[6]       // userRole
+                    );
+                    logs.add(log);
+                } catch (Exception e) {
+                    System.err.println("Error parsing inventory log: " + line);
+                }
+            }
+        }
+    }
+    return logs;
+}
+
+// Add methods for managing stock if not already present
+public void updateStockQuantity(String itemCode, int newQuantity) throws IOException {
+    List<Stock> stocks = getAllStock();
+    boolean found = false;
+
+    for (Stock stock : stocks) {
+        if (stock.getItemCode().equals(itemCode)) {
+            stock.setQuantity(newQuantity);
+            stock.setLastUpdated(LocalDate.now().toString());
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        throw new IllegalArgumentException("Item not found in stock: " + itemCode);
+    }
+
+    writeStockToFile(stocks);
+}
+
+public void addStockItem(Stock stockItem) throws IOException {
+    List<Stock> stocks = getAllStock();
+    
+    // Check if item already exists
+    for (Stock stock : stocks) {
+        if (stock.getItemCode().equals(stockItem.getItemCode())) {
+            throw new IllegalArgumentException("Item already exists in stock: " + stockItem.getItemCode());
+        }
+    }
+
+    stocks.add(stockItem);
+    writeStockToFile(stocks);
+}
 
 }  

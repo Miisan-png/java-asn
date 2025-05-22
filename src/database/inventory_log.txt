@@ -1,0 +1,2 @@
+logId,userId,username,action,details,timestamp,userRole
+INVLOG001,INV001,hamza,Create,Added new stock for ITEM001,2025-05-23 10:00:00,INV
