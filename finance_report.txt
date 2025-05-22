@@ -1,0 +1,59 @@
+APPROVED PURCHASE ORDERS:
+--------------------------------------------------
+Order ID: PO001
+Requisition ID: REQ002
+Item Code: ITEM005
+Item Name: Whiteboard
+Quantity: 7
+Unit Price: RM 120.50
+Total Amount: RM 843.50
+Order Date: 2025-05-15
+Supplier ID: SUP003
+Status: Approved
+--------------------------------------------------
+Order ID: PO002
+Requisition ID: REQ005
+Item Code: ITEM015
+Item Name: Apple MacBook
+Quantity: 4
+Unit Price: RM 1500.00
+Total Amount: RM 6000.00
+Order Date: 2025-05-16
+Supplier ID: SUP005
+Status: Approved
+--------------------------------------------------
+Order ID: PO005
+Requisition ID: REQ003
+Item Code: ITEM010
+Item Name: Xerox Machine
+Quantity: 20
+Unit Price: RM 50.00
+Total Amount: RM 1000.00
+Order Date: 2025-05-19
+Supplier ID: SUP002
+Status: Approved
+--------------------------------------------------
+Order ID: PO006
+Requisition ID: REQ006
+Item Code: ITEM008
+Item Name: Conference Table
+Quantity: 13
+Unit Price: RM 85.00
+Total Amount: RM 1105.00
+Order Date: 2025-05-20
+Supplier ID: SUP003
+Status: Approved
+--------------------------------------------------
+
+PAID PURCHASE ORDERS:
+--------------------------------------------------
+
+OUTSTANDING PAYMENTS:
+--------------------------------------------------
+
+SUMMARY:
+--------------------------------------------------
+Approved POs: 4
+Paid POs: 0
+Outstanding Payments: RM 0.00
+Total Expenditure: RM 8948.50
