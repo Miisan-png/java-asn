@@ -10,7 +10,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 
 public class ViewCurrentStockPage extends admin.UIBase {
@@ -126,6 +125,7 @@ public class ViewCurrentStockPage extends admin.UIBase {
         };
 
         stockTable = new JTable(tableModel);
+        stockTable.setAutoCreateRowSorter(true);
         stockTable.setRowHeight(28);
         stockTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
