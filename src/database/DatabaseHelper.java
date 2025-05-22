@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,6 +37,8 @@ public class DatabaseHelper {
     private static final String SYSTEM_LOGS_FILE = DATA_DIRECTORY + "/system_logs.txt";
     private static final String SALES_ENTRY_FILE = DATA_DIRECTORY + "/sales_entry.txt";
     private static final String SUPPLIERS_FILE = DATA_DIRECTORY + "/supplier.txt";
+    private static final String PO_FILE = "/purchase_order.txt"; 
+
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter LOG_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -600,37 +605,37 @@ public class DatabaseHelper {
         writePurchaseOrdersToFile(orders);
     }
 
-    public void addPurchaseOrder(PurchaseOrder order) throws IOException {
-    System.out.println("Starting to add purchase order...");
-    
-    if (order == null) {
-        System.out.println("Error: PurchaseOrder object is null");
-        throw new IllegalArgumentException("PurchaseOrder object cannot be null");
-    }
-    
-    System.out.println("Validating purchase order data...");
-    if (!order.validateData()) {
-        System.out.println("Validation failed for purchase order:");
-        System.out.println(order); // Make sure your PurchaseOrder class has a toString() method
-        throw new IllegalArgumentException("Invalid purchase order data");
-    }
-    
-    System.out.println("Checking for duplicate order IDs...");
-    List<PurchaseOrder> orders = getAllPurchaseOrders();
-    for (PurchaseOrder existing : orders) {
-        if (existing.getOrderId().equals(order.getOrderId())) {
-            System.out.println("Duplicate order ID found: " + order.getOrderId());
-            throw new IllegalArgumentException("Purchase order ID already exists: " + order.getOrderId());
+    public void addPurchaseOrder(PurchaseOrder po) throws IOException {
+        if (po == null ||
+            po.getOrderId() == null || po.getRequisitionId() == null || po.getItemCode() == null ||
+            po.getQuantity() <= 0 || po.getUnitPrice() <= 0 || po.getTotalAmount() <= 0 ||
+            po.getOrderDate() == null || po.getSupplierId() == null || po.getStatus() == null) {
+            System.out.println("Validation failed for purchase order:");
+            System.out.println(po);
+            throw new IllegalArgumentException("Invalid purchase order data. All fields must be properly set.");
         }
+
+        Path path = Paths.get(PO_FILE);
+        List<String> lines = Files.exists(path) ? Files.readAllLines(path) : new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        sb.append(po.getOrderId()).append("|")
+        .append(po.getRequisitionId()).append("|")
+        .append(po.getItemCode()).append("|")
+        .append(po.getItemName()).append("|")
+        .append(po.getQuantity()).append("|")
+        .append(po.getUnitPrice()).append("|")
+        .append(po.getTotalAmount()).append("|")
+        .append(po.getStatus()).append("|")
+        .append(po.getOrderDate()).append("|")
+        .append(po.getSupplierId());
+
+        lines.add(sb.toString());
+        Files.write(path, lines);
     }
-    
-    System.out.println("Adding new purchase order to list...");
-    orders.add(order);
-    
-    System.out.println("Writing to file...");
-    writePurchaseOrdersToFile(orders);
-    System.out.println("Purchase order added successfully!");
-}
+
+
+
+   
     public void deletePurchaseOrder(String orderId) throws IOException {
         List<PurchaseOrder> orders = getAllPurchaseOrders();
         boolean removed = false;

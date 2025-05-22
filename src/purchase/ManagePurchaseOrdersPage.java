@@ -1,21 +1,18 @@
 package purchase;
 
 import database.DatabaseHelper;
-import models.PurchaseOrder;
-import models.User;
-import models.SystemLog;
-import java.time.LocalDateTime;
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import models.PurchaseOrder;
+import models.SystemLog;
+import models.User;
 
 public class ManagePurchaseOrdersPage extends JFrame {
     private final User currentUser;
@@ -386,121 +383,122 @@ public class ManagePurchaseOrdersPage extends JFrame {
     }
 
     private void showAddPODialog() {
-        JDialog addDialog = new JDialog(this, "Add New Purchase Order", true);
-        addDialog.setSize(500, 400);
-        addDialog.setLayout(new BorderLayout());
-        
-        JPanel formPanel = new JPanel(new GridLayout(0, 2, 10, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
-        JTextField reqIdField = new JTextField();
-        JTextField itemCodeField = new JTextField();
-        JTextField itemNameField = new JTextField();
-        JTextField quantityField = new JTextField();
-        JTextField unitPriceField = new JTextField();
-        JTextField supplierIdField = new JTextField();
-        
-        formPanel.add(new JLabel("Requisition ID*:"));
-        formPanel.add(reqIdField);
-        formPanel.add(new JLabel("Item Code*:"));
-        formPanel.add(itemCodeField);
-        formPanel.add(new JLabel("Item Name*:"));
-        formPanel.add(itemNameField);
-        formPanel.add(new JLabel("Quantity*:"));
-        formPanel.add(quantityField);
-        formPanel.add(new JLabel("Unit Price*:"));
-        formPanel.add(unitPriceField);
-        formPanel.add(new JLabel("Supplier ID*:"));
-        formPanel.add(supplierIdField);
-        
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton saveButton = new JButton("Save");
-        JButton cancelButton = new JButton("Cancel");
-        
-        saveButton.setBackground(primaryColor);
-        saveButton.setForeground(Color.WHITE);
-        cancelButton.setBackground(new Color(120, 120, 120));
-        cancelButton.setForeground(Color.WHITE);
-        
-        saveButton.addActionListener(e -> {
-            try {
-                // Validate required fields
-                if (reqIdField.getText().trim().isEmpty() || 
-                    itemCodeField.getText().trim().isEmpty() ||
-                    itemNameField.getText().trim().isEmpty() ||
-                    quantityField.getText().trim().isEmpty() ||
-                    unitPriceField.getText().trim().isEmpty() ||
-                    supplierIdField.getText().trim().isEmpty()) {
-                    throw new IllegalArgumentException("All fields marked with * are required");
-                }
-                
-                // Validate numbers
-                int quantity = Integer.parseInt(quantityField.getText());
-                double unitPrice = Double.parseDouble(unitPriceField.getText());
-                
-                if (quantity <= 0 || unitPrice <= 0) {
-                    throw new NumberFormatException("Quantity and price must be positive numbers");
-                }
-                
-                // Create PO object
-                PurchaseOrder newPO = new PurchaseOrder(
-                    "PO" + System.currentTimeMillis(),
-                    reqIdField.getText().trim(),
-                    itemCodeField.getText().trim(),
-                    itemNameField.getText().trim(),
-                    quantity,
-                    unitPrice,
-                    quantity * unitPrice,
-                    PurchaseOrder.STATUS_PENDING,
-                    LocalDateTime.now().toString(),
-                    supplierIdField.getText().trim()
-                );
-                
-                // Save to database
-                DatabaseHelper db = new DatabaseHelper();
-                db.addPurchaseOrder(newPO);
-                
-                // Log the action
-                SystemLog log = new SystemLog(
-                    "LOG" + System.currentTimeMillis(),
-                    currentUser.getUserId(),
-                    currentUser.getUsername(),
-                    SystemLog.ACTION_CREATE,
-                    "Created new PO: " + newPO.getOrderId(),
-                    LocalDateTime.now(),
-                    currentUser.getRole()
-                );
-                db.addSystemLog(log);
-                
-                addDialog.dispose();
-                loadPendingOrders();
-                JOptionPane.showMessageDialog(this, "Purchase order added successfully!");
-                
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(addDialog, 
-                    "Invalid number format: " + ex.getMessage(),
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
-            } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(addDialog, 
-                    ex.getMessage(),
-                    "Validation Error", JOptionPane.ERROR_MESSAGE);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(addDialog, 
-                    "Database error: " + ex.getMessage(),
-                    "Database Error", JOptionPane.ERROR_MESSAGE);
+    JDialog addDialog = new JDialog(this, "Add New Purchase Order", true);
+    addDialog.setSize(500, 400);
+    addDialog.setLayout(new BorderLayout());
+
+    JPanel formPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+    formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+    JTextField reqIdField = new JTextField();
+    JTextField itemCodeField = new JTextField();
+    JTextField itemNameField = new JTextField();
+    JTextField quantityField = new JTextField();
+    JTextField unitPriceField = new JTextField();
+    JTextField supplierIdField = new JTextField();
+
+    formPanel.add(new JLabel("Requisition ID*:"));
+    formPanel.add(reqIdField);
+    formPanel.add(new JLabel("Item Code*:"));
+    formPanel.add(itemCodeField);
+    formPanel.add(new JLabel("Item Name*:"));
+    formPanel.add(itemNameField);
+    formPanel.add(new JLabel("Quantity*:"));
+    formPanel.add(quantityField);
+    formPanel.add(new JLabel("Unit Price*:"));
+    formPanel.add(unitPriceField);
+    formPanel.add(new JLabel("Supplier ID*:"));
+    formPanel.add(supplierIdField);
+
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    JButton saveButton = new JButton("Save");
+    JButton cancelButton = new JButton("Cancel");
+
+    saveButton.setBackground(primaryColor);
+    saveButton.setForeground(Color.WHITE);
+    cancelButton.setBackground(new Color(120, 120, 120));
+    cancelButton.setForeground(Color.WHITE);
+
+    saveButton.addActionListener(e -> {
+        try {
+            String reqId = reqIdField.getText().trim();
+            String itemCode = itemCodeField.getText().trim();
+            String itemName = itemNameField.getText().trim();
+            String quantityStr = quantityField.getText().trim();
+            String unitPriceStr = unitPriceField.getText().trim();
+            String supplierId = supplierIdField.getText().trim();
+
+            if (reqId.isEmpty() || itemCode.isEmpty() || itemName.isEmpty() || quantityStr.isEmpty() || unitPriceStr.isEmpty() || supplierId.isEmpty()) {
+                throw new IllegalArgumentException("All fields marked with * are required");
             }
-        });
-        
-        cancelButton.addActionListener(e -> addDialog.dispose());
-        
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-        
-        addDialog.add(formPanel, BorderLayout.CENTER);
-        addDialog.add(buttonPanel, BorderLayout.SOUTH);
-        addDialog.setLocationRelativeTo(this);
-        addDialog.setVisible(true);
-    }
+
+            int quantity = Integer.parseInt(quantityStr);
+            double unitPrice = Double.parseDouble(unitPriceStr);
+            if (quantity <= 0 || unitPrice <= 0) {
+                throw new NumberFormatException("Quantity and price must be positive numbers");
+            }
+
+            DatabaseHelper db = new DatabaseHelper();
+            if (db.getPurchaseRequisitionById(reqId) == null) {
+                throw new IllegalArgumentException("Invalid Requisition ID");
+            }
+            if (db.getItemByCode(itemCode) == null) {
+                throw new IllegalArgumentException("Invalid Item Code");
+            }
+            if (db.getSupplierById(supplierId) == null) {
+                throw new IllegalArgumentException("Invalid Supplier ID");
+            }
+
+            PurchaseOrder newPO = new PurchaseOrder(
+                "PO" + System.currentTimeMillis(),
+                reqId,
+                itemCode,
+                itemName,
+                quantity,
+                unitPrice,
+                quantity * unitPrice,
+                PurchaseOrder.STATUS_PENDING,
+                LocalDateTime.now().toString(),
+                supplierId
+            );
+
+            db.addPurchaseOrder(newPO);
+
+            SystemLog log = new SystemLog(
+                "LOG" + System.currentTimeMillis(),
+                currentUser.getUserId(),
+                currentUser.getUsername(),
+                SystemLog.ACTION_CREATE,
+                "Created new PO: " + newPO.getOrderId(),
+                LocalDateTime.now(),
+                currentUser.getRole()
+            );
+            db.addSystemLog(log);
+
+            addDialog.dispose();
+            loadPendingOrders();
+            JOptionPane.showMessageDialog(this, "Purchase order added successfully!");
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(addDialog, "Invalid number: " + ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(addDialog, ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(addDialog, "Database error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    });
+
+    cancelButton.addActionListener(e -> addDialog.dispose());
+
+    buttonPanel.add(saveButton);
+    buttonPanel.add(cancelButton);
+
+    addDialog.add(formPanel, BorderLayout.CENTER);
+    addDialog.add(buttonPanel, BorderLayout.SOUTH);
+    addDialog.setLocationRelativeTo(this);
+    addDialog.setVisible(true);
+}
+
 
     private void editSelectedPO() {
         int selectedRow = poTable.getSelectedRow();
