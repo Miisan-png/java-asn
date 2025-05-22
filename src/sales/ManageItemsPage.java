@@ -2,18 +2,17 @@
 package sales;
 
 import database.DatabaseHelper;
-import models.Item;
-import models.User;
-import models.SystemLog;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
+import models.Item;
+import models.SystemLog;
+import models.User;
 
 public class ManageItemsPage extends UIBase {
 
@@ -347,10 +346,23 @@ public class ManageItemsPage extends UIBase {
 
             try {
                 DatabaseHelper dbHelper = new DatabaseHelper();
-                // Generate a simple item code for the new item. A more robust method might be needed.
-                String newItemCode = "ITEM" + (dbHelper.getAllItems().size() + 1);
+                                List<Item> allItems = dbHelper.getAllItems();
+                boolean duplicateExists = allItems.stream().anyMatch(item ->
+                        item.getItemName().equalsIgnoreCase(itemName) &&
+                        item.getSupplierId().equalsIgnoreCase(supplierId));
+
+                if (duplicateExists) {
+                    JOptionPane.showMessageDialog(this,
+                            "An item with the same name and supplier already exists.",
+                            "Duplicate Item",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                String newItemCode = "ITEM" + (allItems.size() + 1);
                 Item newItem = new Item(newItemCode, itemName, supplierId);
                 dbHelper.addItem(newItem);
+
                 JOptionPane.showMessageDialog(this, "Item added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 logSystemAction(SystemLog.ACTION_CREATE, "Added new item: " + newItemCode);
                 loadItems(); // Refresh the table
