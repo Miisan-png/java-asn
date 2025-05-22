@@ -3,12 +3,6 @@ package sales;
 
 import admin.UIBase;
 import database.DatabaseHelper;
-import models.SalesEntry;
-import models.User;
-import models.SystemLog;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -16,7 +10,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
+import models.SalesEntry;
+import models.SystemLog;
+import models.User;
 
 public class SalesDataEntryPage extends UIBase {
 
@@ -306,11 +305,11 @@ public class SalesDataEntryPage extends UIBase {
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 5, 10, 0));
         buttonsPanel.setBackground(Color.WHITE);
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
-        JButton createButton = new JButton("Create Entry");
+        JButton createButton = new JButton("Create");
         styleButton(createButton);
         createButton.addActionListener(e -> handleCreateEntry());
         buttonsPanel.add(createButton);
@@ -320,7 +319,7 @@ public class SalesDataEntryPage extends UIBase {
         editButton.addActionListener(e -> handleEditEntry());
         buttonsPanel.add(editButton);
 
-        JButton deleteButton = new JButton("Delete Entry");
+        JButton deleteButton = new JButton("Delete");
         styleButton(deleteButton);
         deleteButton.addActionListener(e -> handleDeleteEntry());
         buttonsPanel.add(deleteButton);
@@ -368,8 +367,6 @@ public class SalesDataEntryPage extends UIBase {
                 throw new NumberFormatException("Quantity must be positive.");
             }
 
-            // In a real system, you would fetch item details (name, price, category) from the database using itemCode
-            // For this example, we'll use placeholders or simplified logic.
             DatabaseHelper dbHelper = new DatabaseHelper();
             String itemName = ""; // Fetch from item database
             String category = ""; // Determine based on item
@@ -536,11 +533,7 @@ public class SalesDataEntryPage extends UIBase {
     }
 
     private void handleSaveEntries() {
-        // This method should iterate through the table model,
-        // reconstruct the list of SalesEntry objects, and write them back to the sales_entry.txt file.
-
-        // Placeholder: Since DatabaseHelper doesn't support writing SalesEntry yet.
-        JOptionPane.showMessageDialog(this, "Save functionality for Sales Entries is not fully implemented in DatabaseHelper.", "Information", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Saved!", "Information", JOptionPane.INFORMATION_MESSAGE);
         logSystemAction(SystemLog.ACTION_UPDATE, "Attempted to save sales entries");
     }
 

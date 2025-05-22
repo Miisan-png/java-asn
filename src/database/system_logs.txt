@@ -52,3 +52,6 @@ LOG1747722125910,U004,z,Update,Updated PO: PO005,2025-05-20 14:22:05,PUR
 LOG1747940607491,U002,s,Update,Updated item: ITEM002,2025-05-23 03:03:27,SAL
 LOG1747941057396,U002,s,Create,Added new supplier: John smith,2025-05-23 03:10:57,SAL
 LOG1747941067870,U002,s,Delete,Deleted supplier: Office Solutions Inc,2025-05-23 03:11:07,SAL
+LOG1747941445607,U002,s,Delete,Deleted sales entry for item: ITEM002,2025-05-23 03:17:25,SAL
+LOG1747941449253,U002,s,Update,Attempted to save sales entries,2025-05-23 03:17:29,SAL
+LOG1747941507288,U002,s,Update,Attempted to save sales entries,2025-05-23 03:18:27,SAL
