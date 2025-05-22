@@ -5,6 +5,7 @@ import models.Stock;
 import models.SystemLog;
 import models.User;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
@@ -15,8 +16,6 @@ public class ManualStockAdjustmentPage extends admin.UIBase {
     private final User currentUser;
     private JTable stockTable;
     private DefaultTableModel tableModel;
-    private JTextField adjustmentField;
-    private JTextField reasonField;
 
     public ManualStockAdjustmentPage(User user) {
         super("Manual Stock Adjustment");
@@ -25,146 +24,182 @@ public class ManualStockAdjustmentPage extends admin.UIBase {
 
     @Override
     protected void initUI() {
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.WHITE);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(Color.WHITE);
 
-        JPanel headerPanel = new JPanel(new BorderLayout());
+        JPanel sidebar = createSidebar();
+        root.add(sidebar, BorderLayout.WEST);
+
+        JPanel topBar = createTopBar();
+        root.add(topBar, BorderLayout.NORTH);
+
+        JPanel contentPanel = createContentPanel();
+        root.add(contentPanel, BorderLayout.CENTER);
+
+        setContentPane(root);
+    }
+
+    private JPanel createSidebar() {
+        JPanel sidebar = new JPanel(new BorderLayout());
+        sidebar.setPreferredSize(new Dimension(200, APP_WINDOW_HEIGHT));
+        sidebar.setBackground(Color.WHITE);
+        sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
+
+        JPanel logoPanel = new JPanel(new BorderLayout());
+        logoPanel.setBackground(Color.WHITE);
+        logoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel logo = new JLabel("Inventory", SwingConstants.CENTER);
+        logo.setFont(new Font("Serif", Font.BOLD, 16));
+        logo.setForeground(primaryColor);
+        logoPanel.add(logo, BorderLayout.CENTER);
+        sidebar.add(logoPanel, BorderLayout.NORTH);
+
+        JPanel menuPanel = new JPanel();
+        menuPanel.setBackground(Color.WHITE);
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+
+        JPanel backItem = createMenuItem("Dashboard", false);
+        backItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                goBackToDashboard();
+            }
+        });
+
+        menuPanel.add(backItem);
+        menuPanel.add(Box.createVerticalGlue());
+        sidebar.add(menuPanel, BorderLayout.CENTER);
+
+        return sidebar;
+    }
+
+    private JPanel createTopBar() {
+        JPanel top = new JPanel(new BorderLayout());
+        top.setBackground(Color.WHITE);
+
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         headerPanel.setBackground(Color.WHITE);
-        JButton backButton = new JButton("← Back to Dashboard");
-        backButton.addActionListener(e -> goBackToDashboard());
-        headerPanel.add(backButton, BorderLayout.WEST);
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
+                BorderFactory.createEmptyBorder(15, 20, 15, 20)
+        ));
 
-        tableModel = new DefaultTableModel(new Object[]{"Item Code", "Item Name", "Quantity"}, 0);
+        JLabel title = new JLabel("Manual Stock Adjustment");
+        title.setFont(new Font("Serif", Font.BOLD, 28));
+        title.setForeground(primaryColor);
+        headerPanel.add(title);
+
+        top.add(headerPanel, BorderLayout.SOUTH);
+        return top;
+    }
+
+    private JPanel createMenuItem(String text, boolean selected) {
+        JPanel item = new JPanel(new BorderLayout());
+        item.setBackground(selected ? new Color(230, 230, 230) : Color.WHITE);
+        item.setMaximumSize(new Dimension(200, 50));
+        item.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Serif", Font.BOLD, 16));
+        item.add(label, BorderLayout.CENTER);
+
+        return item;
+    }
+
+    private JPanel createContentPanel() {
+        JPanel content = new JPanel(new BorderLayout(10, 10));
+        content.setBackground(Color.WHITE);
+        content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        tableModel = new DefaultTableModel(new Object[]{"Item Code", "Item Name", "Quantity"}, 0) {
+            public boolean isCellEditable(int row, int col) { return false; }
+        };
+
         stockTable = new JTable(tableModel);
-        stockTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        stockTable.getTableHeader().setReorderingAllowed(false);
-        stockTable.setFillsViewportHeight(true);
+        stockTable.setRowHeight(28);
         JScrollPane scrollPane = new JScrollPane(stockTable);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Color.WHITE);
+        JButton adjustBtn = new JButton("Adjust Stock");
+        adjustBtn.setPreferredSize(new Dimension(150, 40));
+        adjustBtn.setBackground(new Color(96, 96, 96));
+        adjustBtn.setForeground(Color.WHITE);
+        adjustBtn.setFocusPainted(false);
+        adjustBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
+        adjustBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        adjustBtn.addActionListener(e -> openAdjustDialog());
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 5, 5);
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottom.setBackground(Color.WHITE);
+        bottom.add(adjustBtn);
 
-        JLabel adjustmentLabel = new JLabel("Adjustment Quantity:");
-        formPanel.add(adjustmentLabel, gbc);
-
-        gbc.gridx = 1;
-        adjustmentField = new JTextField(10);
-        formPanel.add(adjustmentField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        JLabel reasonLabel = new JLabel("Reason:");
-        formPanel.add(reasonLabel, gbc);
-
-        gbc.gridx = 1;
-        reasonField = new JTextField(20);
-        formPanel.add(reasonField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        JButton adjustButton = new JButton("Adjust Stock");
-        adjustButton.addActionListener(e -> adjustStock());
-        formPanel.add(adjustButton, gbc);
-
-        mainPanel.add(formPanel, BorderLayout.SOUTH);
-
-        setContentPane(mainPanel);
-        pack();
-        setLocationRelativeTo(null);
+        content.add(scrollPane, BorderLayout.CENTER);
+        content.add(bottom, BorderLayout.SOUTH);
 
         loadStockData();
+        return content;
     }
 
-    private void loadStockData() {
-        try {
-            DatabaseHelper dbHelper = new DatabaseHelper();
-            List<Stock> stockList = dbHelper.getAllStock();
-
-            tableModel.setRowCount(0);
-            for (Stock stock : stockList) {
-                Object[] rowData = {stock.getItemCode(), stock.getItemName(), stock.getQuantity()};
-                tableModel.addRow(rowData);
-            }
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Error loading stock data: " + ex.getMessage(),
-                    "Database Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void adjustStock() {
+    private void openAdjustDialog() {
         int selectedRow = stockTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select an item to adjust.",
-                    "No Selection", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select an item to adjust.", "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         String itemCode = (String) tableModel.getValueAt(selectedRow, 0);
-        String adjustmentStr = adjustmentField.getText().trim();
-        String reason = reasonField.getText().trim();
+        int currentQty = (int) tableModel.getValueAt(selectedRow, 2);
 
-        if (adjustmentStr.isEmpty() || reason.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter the adjustment quantity and reason.",
-                    "Incomplete Input", JOptionPane.WARNING_MESSAGE);
-            return;
+        JTextField adjustmentField = new JTextField();
+        JTextField reasonField = new JTextField();
+
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(new JLabel("Current Quantity: " + currentQty));
+        panel.add(new JLabel("Adjustment Amount:"));
+        panel.add(adjustmentField);
+        panel.add(new JLabel("Reason:"));
+        panel.add(reasonField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Adjust Stock - " + itemCode, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                int adjust = Integer.parseInt(adjustmentField.getText().trim());
+                String reason = reasonField.getText().trim();
+                if (reason.isEmpty()) throw new IllegalArgumentException("Reason is required");
+                int newQty = currentQty + adjust;
+
+                DatabaseHelper db = new DatabaseHelper();
+                db.updateStockQuantity(itemCode, newQty);
+                db.addInventoryLog(new SystemLog("LOG" + System.currentTimeMillis(), currentUser.getUserId(), currentUser.getUsername(), SystemLog.ACTION_UPDATE,
+                        "Manual adjustment on " + itemCode + " by " + adjust + ". Reason: " + reason, LocalDateTime.now(), currentUser.getRole()));
+
+                JOptionPane.showMessageDialog(this, "Stock adjusted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                loadStockData();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Adjustment must be a number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
+    }
 
+    private void loadStockData() {
         try {
-            int adjustment = Integer.parseInt(adjustmentStr);
-            int currentQuantity = (int) tableModel.getValueAt(selectedRow, 2);
-            int newQuantity = currentQuantity + adjustment;
-
-            DatabaseHelper dbHelper = new DatabaseHelper();
-            dbHelper.updateStockQuantity(itemCode, newQuantity);
-
-            SystemLog log = new SystemLog(
-                    "LOG" + System.currentTimeMillis(),
-                    currentUser.getUserId(),
-                    currentUser.getUsername(),
-                    SystemLog.ACTION_UPDATE,
-                    "Manual stock adjustment for item " + itemCode + ". Quantity adjusted by " + adjustment + ". Reason: " + reason,
-                    LocalDateTime.now(),
-                    currentUser.getRole()
-            );
-            dbHelper.addInventoryLog(log);
-
-            JOptionPane.showMessageDialog(this, "Stock adjusted successfully!",
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            loadStockData();
-            adjustmentField.setText("");
-            reasonField.setText("");
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid adjustment quantity. Please enter a valid number.",
-                    "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            DatabaseHelper db = new DatabaseHelper();
+            List<Stock> stocks = db.getAllStock();
+            tableModel.setRowCount(0);
+            for (Stock s : stocks) {
+                tableModel.addRow(new Object[]{s.getItemCode(), s.getItemName(), s.getQuantity()});
+            }
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Error adjusting stock: " + ex.getMessage(),
-                    "Database Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading stock: " + ex.getMessage());
         }
     }
 
     private void goBackToDashboard() {
         dispose();
-        InventoryDashboardPage inventoryDashboardPage = new InventoryDashboardPage(currentUser);
-        inventoryDashboardPage.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            User currentUser = new User("John Doe", "johndoe", "password", "inventory");
-            ManualStockAdjustmentPage adjustmentPage = new ManualStockAdjustmentPage(currentUser);
-            adjustmentPage.setVisible(true);
-        });
+        new InventoryDashboardPage(currentUser).setVisible(true);
     }
 }
