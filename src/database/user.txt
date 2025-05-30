@@ -1,9 +1,6 @@
 userId,username,password,email,role
 ADMN001,a,a,admin@gmail.com,ADMN
-INV001,Hamzadw,Hydra720!,hama@mail.cpm,ADMN
-U001,Generalc,!2345678,j.cuambe@gmail.com,FIN
-U002,saas,s,sha@gmail.com,SAL
-U003,z,zzzzzz1!,zz@gmail.com,PUR
-U004,z,zz,zzee@email,PUR
-U005,f,f,ff@gmail.com,FIN
-U006,h,h,hamzan@gmail.com,INV
+INV001,i,i,hama@mail.cpm,INV
+U001,f,f,j.cuambe@gmail.com,FIN
+U002,s,s,sha@gmail.com,SAL
+U003,p,p,zz@gmail.com,PUR

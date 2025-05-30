@@ -11,6 +11,17 @@ Order Date: 2025-05-16
 Supplier ID: SUP005
 Status: Approved
 --------------------------------------------------
+Order ID: PO003
+Requisition ID: REQ008
+Item Code: ITEM012
+Item Name: Sweet Potatoes 1kg
+Quantity: 8
+Unit Price: RM 75.25
+Total Amount: RM 602.00
+Order Date: 2025-05-17
+Supplier ID: SUP004
+Status: Approved
+--------------------------------------------------
 Order ID: PO005
 Requisition ID: REQ003
 Item Code: ITEM010
@@ -53,7 +64,7 @@ Status: Pending
 
 SUMMARY:
 --------------------------------------------------
-Approved POs: 3
+Approved POs: 4
 Paid POs: 0
 Outstanding Payments: RM 843.50
-Total Expenditure: RM 8105.00
+Total Expenditure: RM 8707.00

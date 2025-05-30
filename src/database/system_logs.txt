@@ -85,3 +85,9 @@ LOG1748636904148,U005,f,ViewlogS,Opened FinanceGenerateReportsPage,2025-05-31 04
 LOG1748636920789,U005,f,ViewlogS,Opened FinanceGenerateReportsPage,2025-05-31 04:28:40,FIN
 LOG1748637014141,U005,f,ViewlogS,Opened FinanceGenerateReportsPage,2025-05-31 04:30:14,FIN
 LOG1748637033225,U005,f,ViewlogS,Opened FinanceGenerateReportsPage,2025-05-31 04:30:33,FIN
+LOG1748637393115,ADMN001,a,Create,Added new user: SalesManager,2025-05-31 04:36:33,ADMN
+LOG1748637420430,ADMN001,a,Update,Updated user: SharonSales,2025-05-31 04:37:00,ADMN
+LOG1748637453110,ADMN001,a,Delete,Deleted user: h,2025-05-31 04:37:33,ADMN
+LOG1748637913215,U003,p,Update,Changed status of PO002 to Completed,2025-05-31 04:45:13,PUR
+LOG1748637915961,U003,p,Update,Changed status of PO003 to Completed,2025-05-31 04:45:15,PUR
+LOG1748637960055,U005,f,ViewlogS,Opened FinanceGenerateReportsPage,2025-05-31 04:46:00,FIN
