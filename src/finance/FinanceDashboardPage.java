@@ -7,6 +7,7 @@ import java.awt.*;
 import admin.UIBase;
 import finance.FinanceDashboardPage;
 import models.User;
+import sales.SalesDashboardPage;
 public class FinanceDashboardPage extends UIBase {
 
     private final User currentUser;
@@ -61,19 +62,30 @@ public class FinanceDashboardPage extends UIBase {
         logoutBtn.setPreferredSize(new Dimension(120, 35));
         logoutBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
+        
         logoutBtn.addActionListener(e -> {
-            int response = JOptionPane.showConfirmDialog(
-                FinanceDashboardPage.this,
-                "Are you sure you want to log out?",
-                "Logout Confirmation",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-            );
-            if (response == JOptionPane.YES_OPTION) {
-                dispose();
+    int response = JOptionPane.showConfirmDialog(
+            FinanceDashboardPage.this,
+            "Are you sure you want to log out?",
+            "Logout Confirmation",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+    );
+    if (response == JOptionPane.YES_OPTION) {
+        dispose();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Class<?> loginClass = Class.forName("LoginPage");
+                java.lang.reflect.Method mainMethod = loginClass.getMethod("main", String[].class);
+                mainMethod.invoke(null, (Object) new String[0]);
+            } catch (Exception ex) {
+                ex.printStackTrace();
                 System.exit(0);
             }
         });
+    }
+});
+
 
         logoutPanel.add(logoutBtn);
         navPanel.add(logoutPanel, BorderLayout.SOUTH);

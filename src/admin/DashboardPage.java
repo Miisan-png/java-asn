@@ -35,6 +35,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import models.User;
+import sales.SalesDashboardPage;
 
 public class DashboardPage extends UIBase {
     
@@ -149,23 +150,30 @@ public class DashboardPage extends UIBase {
         logoutBtn.setFocusPainted(false);
         logoutBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        logoutBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int response = JOptionPane.showConfirmDialog(
-                    DashboardPage.this,
-                    "Are you sure you want to log out?",
-                    "Logout Confirmation",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE
-                );
-                
-                if (response == JOptionPane.YES_OPTION) {
-                    dispose();
-                    System.exit(0);
-                }
+        
+        logoutBtn.addActionListener(e -> {
+    int response = JOptionPane.showConfirmDialog(
+            DashboardPage.this,
+            "Are you sure you want to log out?",
+            "Logout Confirmation",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+    );
+    if (response == JOptionPane.YES_OPTION) {
+        dispose();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Class<?> loginClass = Class.forName("LoginPage");
+                java.lang.reflect.Method mainMethod = loginClass.getMethod("main", String[].class);
+                mainMethod.invoke(null, (Object) new String[0]);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                System.exit(0);
             }
         });
+    }
+});
+
         
         logoutPanel.add(logoutBtn);
         navPanel.add(logoutPanel, BorderLayout.SOUTH);

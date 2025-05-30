@@ -18,6 +18,7 @@ import models.User;
 import sales.UIBase;
 import admin.MyProfilePage; 
 
+
 public class SalesDashboardPage extends UIBase {
 
     private User currentUser;
@@ -113,19 +114,30 @@ public class SalesDashboardPage extends UIBase {
         logoutBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         logoutBtn.addActionListener(e -> {
-            int response = JOptionPane.showConfirmDialog(
-                    SalesDashboardPage.this,
-                    "Are you sure you want to log out?",
-                    "Logout Confirmation",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE
-            );
-            if (response == JOptionPane.YES_OPTION) {
-                dispose();
+    int response = JOptionPane.showConfirmDialog(
+            SalesDashboardPage.this,
+            "Are you sure you want to log out?",
+            "Logout Confirmation",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+    );
+    if (response == JOptionPane.YES_OPTION) {
+        dispose();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Class<?> loginClass = Class.forName("LoginPage");
+                java.lang.reflect.Method mainMethod = loginClass.getMethod("main", String[].class);
+                mainMethod.invoke(null, (Object) new String[0]);
+            } catch (Exception ex) {
+                ex.printStackTrace();
                 System.exit(0);
             }
         });
+    }
+});
 
+
+   
         logoutPanel.add(logoutBtn);
         navPanel.add(logoutPanel, BorderLayout.SOUTH);
 
