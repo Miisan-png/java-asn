@@ -43,7 +43,7 @@ public class ViewCurrentStockPage extends admin.UIBase {
 
         setContentPane(root);
         
-        // Load initial data
+        
         loadStockData();
     }
 
@@ -128,11 +128,11 @@ public class ViewCurrentStockPage extends admin.UIBase {
         content.setBackground(Color.WHITE);
         content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Create filter panel at the top
+        
         JPanel filterPanel = createFilterPanel();
         content.add(filterPanel, BorderLayout.NORTH);
 
-        // Create table
+        
         tableModel = new DefaultTableModel(new Object[]{"Item Code", "Item Name", "Quantity", "Location", "Last Updated", "Status"}, 0) {
             public boolean isCellEditable(int r, int c) { 
                 return false; 
@@ -150,14 +150,14 @@ public class ViewCurrentStockPage extends admin.UIBase {
         stockTable.setShowGrid(true);
         stockTable.setGridColor(new Color(230, 230, 230));
 
-        // Custom renderer for status and quantity columns
+        
         stockTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 
                 if (!isSelected) {
-                    if (column == 5) { // Status column
+                    if (column == 5) { 
                         String status = value != null ? value.toString() : "";
                         switch (status) {
                             case Stock.STATUS_OUT_OF_STOCK -> {
@@ -173,7 +173,7 @@ public class ViewCurrentStockPage extends admin.UIBase {
                                 c.setForeground(new Color(40, 167, 69));
                             }
                         }
-                    } else if (column == 2) { // Quantity column
+                    } else if (column == 2) { 
                         try {
                             int quantity = Integer.parseInt(value.toString());
                             if (quantity == 0) {
@@ -203,7 +203,7 @@ public class ViewCurrentStockPage extends admin.UIBase {
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         content.add(scrollPane, BorderLayout.CENTER);
 
-        // Create action buttons panel
+        
         JPanel actionsPanel = createActionsPanel();
         content.add(actionsPanel, BorderLayout.SOUTH);
 
@@ -224,18 +224,18 @@ public class ViewCurrentStockPage extends admin.UIBase {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
 
-        // Left side - Search and filters
+        
         JPanel leftFilters = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         leftFilters.setBackground(Color.WHITE);
 
-        // Search field
+        
         JLabel searchLabel = new JLabel("Search:");
         searchLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
         searchField = new JTextField(15);
         searchField.setFont(new Font("SansSerif", Font.PLAIN, 12));
         searchField.addActionListener(e -> applyFilters());
 
-        // Status filter dropdown
+        
         JLabel statusLabel = new JLabel("Status:");
         statusLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
         String[] statusOptions = {"All Status", Stock.STATUS_IN_STOCK, Stock.STATUS_LOW_STOCK, Stock.STATUS_OUT_OF_STOCK};
@@ -243,7 +243,7 @@ public class ViewCurrentStockPage extends admin.UIBase {
         statusFilter.setFont(new Font("SansSerif", Font.PLAIN, 12));
         statusFilter.addActionListener(e -> applyFilters());
 
-        // Quantity filter dropdown
+        
         JLabel quantityLabel = new JLabel("Quantity:");
         quantityLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
         String[] quantityOptions = {"All Quantities", "Out of Stock (0)", "Low Stock (<10)", "Normal Stock (>=10)"};
@@ -260,7 +260,7 @@ public class ViewCurrentStockPage extends admin.UIBase {
         leftFilters.add(quantityLabel);
         leftFilters.add(quantityFilter);
 
-        // Right side - Action buttons
+        
         JPanel rightActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         rightActions.setBackground(Color.WHITE);
 
@@ -327,7 +327,7 @@ public class ViewCurrentStockPage extends admin.UIBase {
         List<Stock> filteredList = allStockList.stream()
                 .filter(stock -> stock != null)
                 .filter(stock -> {
-                    // Search filter
+                    
                     if (!searchText.isEmpty()) {
                         return stock.getItemCode().toLowerCase().contains(searchText) ||
                                stock.getItemName().toLowerCase().contains(searchText) ||
@@ -336,14 +336,14 @@ public class ViewCurrentStockPage extends admin.UIBase {
                     return true;
                 })
                 .filter(stock -> {
-                    // Status filter
+                    
                     if (!"All Status".equals(selectedStatus)) {
                         return stock.getStatus().equals(selectedStatus);
                     }
                     return true;
                 })
                 .filter(stock -> {
-                    // Quantity filter
+                    
                     if (!"All Quantities".equals(selectedQuantity)) {
                         int quantity = stock.getQuantity();
                         switch (selectedQuantity) {

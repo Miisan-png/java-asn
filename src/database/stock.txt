@@ -1,5 +1,5 @@
 itemCode,itemName,quantity,location,lastUpdated,status
-ITEM001,Fresh Milk 1L,50,Cold Storage A,2025-05-25,In Stock
+ITEM001,Fresh Milk 1L,30,Cold Storage A,2025-05-31,In Stock
 ITEM002,Organic Carrots 1kg,80,Fresh Produce,2025-05-25,In Stock
 ITEM003,Atlantic Salmon 500g,25,Freezer Section,2025-05-25,In Stock
 ITEM004,Basmati Rice 5kg,40,Dry Goods,2025-05-25,In Stock

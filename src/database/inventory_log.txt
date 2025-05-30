@@ -2,4 +2,4 @@ logId,userId,username,action,details,timestamp,userRole
 INVLOG001,INV001,inventory_manager,Update,Updated stock for Fresh Milk - quantity adjusted by +20,2025-05-25 10:00:00,INV
 INVLOG002,INV001,inventory_manager,Alert,Low stock alert for Fresh Prawns - only 8 units remaining,2025-05-26 11:30:00,INV
 INVLOG003,INV001,inventory_manager,Update,Received fresh delivery of Red Apples - added 50 units,2025-05-27 09:15:00,INV
-INVLOG004,INV001,inventory_manager,Quality,Quality check completed for Atlantic Salmon - all items fresh,2025-05-27 14:20:00,INV
+INVLOG004,INV001,inventory_manager,Quality,Quality check completed for Atlantic Salmon - all items fresh,2025-05-27 14:20:00,INVLOG1748641470258,INV001,i,Update,Confirmed stock receipt for ITEM001 with qty 30,2025-05-31 05:44:30,INV
