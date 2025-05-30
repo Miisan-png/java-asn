@@ -37,63 +37,74 @@ public class SalesDataEntryPage extends UIBase {
         super.setVisible(visible);
     }
 
-    public void loadSalesEntries() {
-        try {
-            // Check if currentUser is null
-            if (currentUser == null) {
-                System.out.println("Warning: Current user is null in loadSalesEntries");
-                return; // Don't try to load entries if user is null
-            }
+    // Replace the loadSalesEntries() method in SalesDataEntryPage.java with this fixed version:
 
-            DatabaseHelper dbHelper = new DatabaseHelper();
-            // In a real implementation, we would load entries from the database
-            List<SalesEntry> allEntries = new ArrayList<>();
-
-            // Create some sample entries for demonstration
-            allEntries.add(new SalesEntry("SALE001", LocalDate.now(), "ITEM001", "Office Chair", 5, "Furniture", 199.99, 999.95, currentUser.getUserId()));
-            allEntries.add(new SalesEntry("SALE002", LocalDate.now().minusDays(1), "ITEM002", "Desk Lamp", 10, "Electronics", 49.99, 499.90, currentUser.getUserId()));
-
-            updateTable(allEntries);
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this,
-                    "Error loading sales entries: " + ex.getMessage(),
-                    "Data Error",
-                    JOptionPane.ERROR_MESSAGE);
+public void loadSalesEntries() {
+    try {
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        List<SalesEntry> allEntries = dbHelper.getAllSalesEntries();
+        
+        if (allEntries == null) {
+            allEntries = new ArrayList<>();
         }
-    }
-
-    private void updateTable(List<SalesEntry> entries) {
-        if (tableModel == null) {
-            // Initialize the table model if it hasn't been created yet
-            String[] columnNames = {"Date", "Item ID", "Item Name", "Quantity", "Category", "Price per unit", "Total price"};
-            tableModel = new DefaultTableModel(columnNames, 0);
-        }
-
-        tableModel.setRowCount(0);
-
-        if (currentUser == null || entries == null) {
-            return; // Don't try to update the table if user or entries are null
-        }
-
-        for (SalesEntry entry : entries) {
-            if (entry != null && entry.getSalesManagerId() != null &&
+        
+        // Filter entries for current user if user is not null
+        List<SalesEntry> userEntries = new ArrayList<>();
+        if (currentUser != null) {
+            for (SalesEntry entry : allEntries) {
+                if (entry != null && entry.getSalesManagerId() != null && 
                     entry.getSalesManagerId().equals(currentUser.getUserId())) {
-
-                Object[] rowData = {
-                        entry.getDate(),
-                        entry.getItemId(),
-                        entry.getItemName() != null ? entry.getItemName() : "",
-                        entry.getQuantity(),
-                        entry.getCategory() != null ? entry.getCategory() : "",
-                        entry.getPricePerUnit(),
-                        entry.getTotalPrice()
-                };
-                tableModel.addRow(rowData);
+                    userEntries.add(entry);
+                }
             }
+        } else {
+            // If currentUser is null, show all entries (for debugging)
+            System.out.println("Warning: Current user is null, showing all entries");
+            userEntries = allEntries;
+        }
+        
+        updateTable(userEntries);
+        System.out.println("Loaded " + userEntries.size() + " sales entries for user: " + 
+                          (currentUser != null ? currentUser.getUsername() : "null"));
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this,
+                "Error loading sales entries: " + ex.getMessage(),
+                "Data Error",
+                JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+// Also update the updateTable method to handle null currentUser better:
+private void updateTable(List<SalesEntry> entries) {
+    if (tableModel == null) {
+        // Initialize the table model if it hasn't been created yet
+        String[] columnNames = {"Date", "Item ID", "Item Name", "Quantity", "Category", "Price per unit", "Total price"};
+        tableModel = new DefaultTableModel(columnNames, 0);
+    }
+
+    tableModel.setRowCount(0);
+
+    if (entries == null) {
+        return; // Don't try to update the table if entries are null
+    }
+
+    for (SalesEntry entry : entries) {
+        if (entry != null) {
+            Object[] rowData = {
+                    entry.getDate(),
+                    entry.getItemId(),
+                    entry.getItemName() != null ? entry.getItemName() : "",
+                    entry.getQuantity(),
+                    entry.getCategory() != null ? entry.getCategory() : "",
+                    String.format("%.2f", entry.getPricePerUnit()),
+                    String.format("%.2f", entry.getTotalPrice())
+            };
+            tableModel.addRow(rowData);
         }
     }
+}
 
     @Override
     protected void initUI() {
@@ -250,94 +261,94 @@ public class SalesDataEntryPage extends UIBase {
     }
 
     private JPanel createContentPanel() {
-        JPanel contentPanel = new JPanel(new BorderLayout(20, 20));
-        contentPanel.setBackground(Color.WHITE);
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    JPanel contentPanel = new JPanel(new BorderLayout(20, 20));
+    contentPanel.setBackground(Color.WHITE);
+    contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Use GridLayout for better alignment of form fields
-        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
-        formPanel.setBackground(Color.WHITE);
-        formPanel.setBorder(BorderFactory.createTitledBorder("Enter Sales Data"));
+    // Use GridLayout for better alignment of form fields
+    JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+    formPanel.setBackground(Color.WHITE);
+    formPanel.setBorder(BorderFactory.createTitledBorder("Enter Sales Data"));
 
-        dateField = new JTextField(10);
-        itemCodeField = new JTextField(10);
-        quantityField = new JTextField(10);
+    dateField = new JTextField(10);
+    itemCodeField = new JTextField(10);
+    quantityField = new JTextField(10);
 
-        formPanel.add(new JLabel("Date (YYYY-MM-DD):"));
-        formPanel.add(dateField);
-        formPanel.add(new JLabel("Item Code:"));
-        formPanel.add(itemCodeField);
-        formPanel.add(new JLabel("Sales Quantity:"));
-        formPanel.add(quantityField);
+    formPanel.add(new JLabel("Date (YYYY-MM-DD):"));
+    formPanel.add(dateField);
+    formPanel.add(new JLabel("Item Code:"));
+    formPanel.add(itemCodeField);
+    formPanel.add(new JLabel("Sales Quantity:"));
+    formPanel.add(quantityField);
 
-        // Add some padding around the form panel
-        JPanel formContainer = new JPanel(new BorderLayout());
-        formContainer.setBackground(Color.WHITE);
-        formContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        formContainer.add(formPanel, BorderLayout.CENTER);
+    // Add some padding around the form panel
+    JPanel formContainer = new JPanel(new BorderLayout());
+    formContainer.setBackground(Color.WHITE);
+    formContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    formContainer.add(formPanel, BorderLayout.CENTER);
 
-        contentPanel.add(formContainer, BorderLayout.NORTH);
+    contentPanel.add(formContainer, BorderLayout.NORTH);
 
-        // Rest of the method remains the same...
-        String[] columnNames = {"Date", "Item ID", "Item Name", "Quantity", "Category", "Price per unit", "Total price"};
-        tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return true;
+    // Initialize table model BEFORE creating the table
+    String[] columnNames = {"Date", "Item ID", "Item Name", "Quantity", "Category", "Price per unit", "Total price"};
+    tableModel = new DefaultTableModel(columnNames, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // Make read-only for better data integrity
+        }
+        @Override
+        public Class<?> getColumnClass(int column) {
+            if (column == 3 || column == 5 || column == 6) {
+                return Object.class;
             }
-            @Override
-            public Class<?> getColumnClass(int column) {
-                if (column == 3 || column == 5 || column == 6) {
-                    return Object.class;
-                }
-                return String.class;
-            }
-        };
+            return String.class;
+        }
+    };
 
-        salesTable = new JTable(tableModel);
-        salesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        salesTable.getTableHeader().setBackground(new Color(240, 240, 240));
-        salesTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
-        salesTable.setRowHeight(30);
-        salesTable.setGridColor(Color.LIGHT_GRAY);
+    salesTable = new JTable(tableModel);
+    salesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    salesTable.getTableHeader().setBackground(new Color(240, 240, 240));
+    salesTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
+    salesTable.setRowHeight(30);
+    salesTable.setGridColor(Color.LIGHT_GRAY);
 
-        JScrollPane scrollPane = new JScrollPane(salesTable);
-        scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        contentPanel.add(scrollPane, BorderLayout.CENTER);
+    JScrollPane scrollPane = new JScrollPane(salesTable);
+    scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonsPanel = new JPanel(new GridLayout(1, 5, 10, 0));
-        buttonsPanel.setBackground(Color.WHITE);
-        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+    JPanel buttonsPanel = new JPanel(new GridLayout(1, 5, 10, 0));
+    buttonsPanel.setBackground(Color.WHITE);
+    buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
-        JButton createButton = new JButton("Create");
-        styleButton(createButton);
-        createButton.addActionListener(e -> handleCreateEntry());
-        buttonsPanel.add(createButton);
+    JButton createButton = new JButton("Create");
+    styleButton(createButton);
+    createButton.addActionListener(e -> handleCreateEntry());
+    buttonsPanel.add(createButton);
 
-        JButton editButton = new JButton("Edit Entry");
-        styleButton(editButton);
-        editButton.addActionListener(e -> handleEditEntry());
-        buttonsPanel.add(editButton);
+    JButton editButton = new JButton("Edit Entry");
+    styleButton(editButton);
+    editButton.addActionListener(e -> handleEditEntry());
+    buttonsPanel.add(editButton);
 
-        JButton deleteButton = new JButton("Delete");
-        styleButton(deleteButton);
-        deleteButton.addActionListener(e -> handleDeleteEntry());
-        buttonsPanel.add(deleteButton);
+    JButton deleteButton = new JButton("Delete");
+    styleButton(deleteButton);
+    deleteButton.addActionListener(e -> handleDeleteEntry());
+    buttonsPanel.add(deleteButton);
 
-        JButton saveButton = new JButton("Save");
-        styleButton(saveButton);
-        saveButton.addActionListener(e -> handleSaveEntries());
-        buttonsPanel.add(saveButton);
+    JButton saveButton = new JButton("Save");
+    styleButton(saveButton);
+    saveButton.addActionListener(e -> handleSaveEntries());
+    buttonsPanel.add(saveButton);
 
-        JButton resetButton = new JButton("Reset");
-        styleButton(resetButton);
-        resetButton.addActionListener(e -> handleResetForm());
-        buttonsPanel.add(resetButton);
+    JButton resetButton = new JButton("Reset");
+    styleButton(resetButton);
+    resetButton.addActionListener(e -> handleResetForm());
+    buttonsPanel.add(resetButton);
 
-        contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
+    contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
-        return contentPanel;
-    }
+    return contentPanel;
+}
 
     private void styleButton(JButton button) {
         button.setBackground(new Color(120, 120, 120));
@@ -349,37 +360,258 @@ public class SalesDataEntryPage extends UIBase {
         button.setPreferredSize(new Dimension(120, 40)); // Adjusted size for more buttons
     }
 
+    private void handleDeleteEntry() {
+    int selectedRow = salesTable.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Please select an entry to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
 
-    private void handleCreateEntry() {
-        String dateStr = dateField.getText().trim();
-        String itemCode = itemCodeField.getText().trim();
-        String quantityStr = quantityField.getText().trim();
+    // Get the item ID from the selected row to identify the entry
+    String itemId = (String) tableModel.getValueAt(selectedRow, 1); // Item ID column
+    String itemName = (String) tableModel.getValueAt(selectedRow, 2); // Item Name column
+    
+    int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to delete this sales entry?\n\n" +
+            "Item: " + itemName + " (" + itemId + ")",
+            "Confirm Delete",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
 
-        if (dateStr.isEmpty() || itemCode.isEmpty() || quantityStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Date, Item Code, and Quantity are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
+    if (confirm == JOptionPane.YES_OPTION) {
+        try {
+            DatabaseHelper dbHelper = new DatabaseHelper();
+            List<SalesEntry> allEntries = dbHelper.getAllSalesEntries();
+            
+            // Find and remove the entry that matches the selected row
+            boolean entryFound = false;
+            for (int i = 0; i < allEntries.size(); i++) {
+                SalesEntry entry = allEntries.get(i);
+                if (entry != null && 
+                    entry.getItemId().equals(itemId) && 
+                    entry.getSalesManagerId().equals(currentUser.getUserId())) {
+                    
+                    // Found the matching entry, now delete it from database
+                    dbHelper.deleteSalesEntry(entry.getEntryId());
+                    entryFound = true;
+                    break;
+                }
+            }
+            
+            if (entryFound) {
+                // Remove from table display
+                tableModel.removeRow(selectedRow);
+                JOptionPane.showMessageDialog(this, 
+                    "Sales entry deleted successfully!", 
+                    "Success", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                logSystemAction(SystemLog.ACTION_DELETE, "Deleted sales entry for item: " + itemId);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Could not find the sales entry to delete.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+            
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this,
+                "Error deleting sales entry: " + ex.getMessage(),
+                "Database Error",
+                JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+}
+
+private void handleCreateEntry() {
+    String dateStr = dateField.getText().trim();
+    String itemCode = itemCodeField.getText().trim();
+    String quantityStr = quantityField.getText().trim();
+
+    if (dateStr.isEmpty() || itemCode.isEmpty() || quantityStr.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Date, Item Code, and Quantity are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try {
+        LocalDate date = LocalDate.parse(dateStr);
+        int quantity = Integer.parseInt(quantityStr);
+        if (quantity <= 0) {
+            throw new NumberFormatException("Quantity must be positive.");
+        }
+
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        String itemName = "";
+        String category = "";
+        double pricePerUnit = 0.0;
+
+        try {
+            models.Item item = dbHelper.getItemByCode(itemCode);
+            if (item != null) {
+                itemName = item.getItemName();
+                pricePerUnit = item.getPricePerUnit(); // Use actual price from item
+                
+                // Determine category based on item name (simple categorization)
+                if (itemName.toLowerCase().contains("milk") || itemName.toLowerCase().contains("cheese") || 
+                    itemName.toLowerCase().contains("yogurt") || itemName.toLowerCase().contains("eggs")) {
+                    category = "Dairy";
+                } else if (itemName.toLowerCase().contains("bread") || itemName.toLowerCase().contains("rice") || 
+                          itemName.toLowerCase().contains("pasta") || itemName.toLowerCase().contains("oats")) {
+                    category = "Grains";
+                } else if (itemName.toLowerCase().contains("banana") || itemName.toLowerCase().contains("apple") || 
+                          itemName.toLowerCase().contains("orange")) {
+                    category = "Fruits";
+                } else if (itemName.toLowerCase().contains("tomato") || itemName.toLowerCase().contains("carrot") || 
+                          itemName.toLowerCase().contains("potato") || itemName.toLowerCase().contains("spinach")) {
+                    category = "Vegetables";
+                } else if (itemName.toLowerCase().contains("chicken") || itemName.toLowerCase().contains("beef") || 
+                          itemName.toLowerCase().contains("salmon")) {
+                    category = "Meat & Seafood";
+                } else {
+                    category = "General";
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Item Code not found.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Error fetching item details: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        double totalPrice = quantity * pricePerUnit;
+
+        // Generate a unique entry ID
+        String entryId = "SALE" + System.currentTimeMillis();
+
+        SalesEntry newEntry = new SalesEntry(entryId, date, itemCode, itemName, quantity, category, pricePerUnit, totalPrice, currentUser.getUserId());
+
+        // Save to database immediately
         try {
-            LocalDate date = LocalDate.parse(dateStr);
-            int quantity = Integer.parseInt(quantityStr);
-            if (quantity <= 0) {
+            dbHelper.addSalesEntry(newEntry);
+            
+            // Add to the table model for immediate display
+            tableModel.addRow(new Object[]{
+                    newEntry.getDate(),
+                    newEntry.getItemId(),
+                    newEntry.getItemName(),
+                    newEntry.getQuantity(),
+                    newEntry.getCategory(),
+                    String.format("%.2f", newEntry.getPricePerUnit()),
+                    String.format("%.2f", newEntry.getTotalPrice())
+            });
+
+            JOptionPane.showMessageDialog(this, "Sales entry created and saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            logSystemAction(SystemLog.ACTION_CREATE, "Created new sales entry for item: " + itemCode);
+            handleResetForm(); // Clear form after successful creation
+            
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Error saving sales entry: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+
+    } catch (DateTimeParseException ex) {
+        JOptionPane.showMessageDialog(this, "Invalid date format. Please use YYYY-MM-DD.", "Input Error", JOptionPane.ERROR_MESSAGE);
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Invalid quantity. Please enter a number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    }
+}
+
+// Replace the handleEditEntry() method in SalesDataEntryPage.java with this:
+
+private void handleEditEntry() {
+    int selectedRow = salesTable.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Please select an entry to edit.", "No Selection", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Get data from the selected row
+    Object dateObj = tableModel.getValueAt(selectedRow, 0);
+    Object itemCodeObj = tableModel.getValueAt(selectedRow, 1);
+    Object itemNameObj = tableModel.getValueAt(selectedRow, 2);
+    Object quantityObj = tableModel.getValueAt(selectedRow, 3);
+    Object categoryObj = tableModel.getValueAt(selectedRow, 4);
+    Object pricePerUnitObj = tableModel.getValueAt(selectedRow, 5);
+
+    // Create edit form
+    JTextField editDateField = new JTextField(dateObj != null ? dateObj.toString() : "");
+    JTextField editItemCodeField = new JTextField(itemCodeObj != null ? itemCodeObj.toString() : "");
+    JTextField editItemNameField = new JTextField(itemNameObj != null ? itemNameObj.toString() : "");
+    editItemNameField.setEditable(false); // Item name should be auto-populated from item code
+    JTextField editQuantityField = new JTextField(quantityObj != null ? quantityObj.toString() : "");
+    JTextField editCategoryField = new JTextField(categoryObj != null ? categoryObj.toString() : "");
+    editCategoryField.setEditable(false); // Category should be auto-determined
+    JTextField editPricePerUnitField = new JTextField(pricePerUnitObj != null ? pricePerUnitObj.toString() : "");
+    editPricePerUnitField.setEditable(false); // Price should come from item master data
+
+    JPanel panel = new JPanel(new GridLayout(0, 1));
+    panel.add(new JLabel("Date (YYYY-MM-DD):"));
+    panel.add(editDateField);
+    panel.add(new JLabel("Item Code:"));
+    panel.add(editItemCodeField);
+    panel.add(new JLabel("Item Name: (Auto-filled)"));
+    panel.add(editItemNameField);
+    panel.add(new JLabel("Sales Quantity:"));
+    panel.add(editQuantityField);
+    panel.add(new JLabel("Category: (Auto-determined)"));
+    panel.add(editCategoryField);
+    panel.add(new JLabel("Price per unit: (From Item Master)"));
+    panel.add(editPricePerUnitField);
+
+    int result = JOptionPane.showConfirmDialog(this, panel, "Edit Sales Entry", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+    if (result == JOptionPane.OK_OPTION) {
+        try {
+            // Get updated values from fields
+            String newDateStr = editDateField.getText().trim();
+            String newItemCode = editItemCodeField.getText().trim();
+            String newQuantityStr = editQuantityField.getText().trim();
+
+            if (newDateStr.isEmpty() || newItemCode.isEmpty() || newQuantityStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Date, Item Code, and Quantity are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            LocalDate newDate = LocalDate.parse(newDateStr);
+            int newQuantity = Integer.parseInt(newQuantityStr);
+            if (newQuantity <= 0) {
                 throw new NumberFormatException("Quantity must be positive.");
             }
 
+            // Get updated item information from database
             DatabaseHelper dbHelper = new DatabaseHelper();
-            String itemName = ""; // Fetch from item database
-            String category = ""; // Determine based on item
-            double pricePerUnit = 0.0; // Fetch from item database
+            String newItemName = "";
+            String newCategory = "";
+            double newPricePerUnit = 0.0;
 
             try {
-                models.Item item = dbHelper.getItemByCode(itemCode);
+                models.Item item = dbHelper.getItemByCode(newItemCode);
                 if (item != null) {
-                    itemName = item.getItemName();
-                    // You would need to add price and category to your Item model and item.txt file
-                    // For now, using placeholder values
-                    pricePerUnit = 10.0; // Placeholder
-                    category = "General"; // Placeholder
+                    newItemName = item.getItemName();
+                    newPricePerUnit = item.getPricePerUnit();
+                    
+                    // Determine category based on item name
+                    if (newItemName.toLowerCase().contains("milk") || newItemName.toLowerCase().contains("cheese") || 
+                        newItemName.toLowerCase().contains("yogurt") || newItemName.toLowerCase().contains("eggs")) {
+                        newCategory = "Dairy";
+                    } else if (newItemName.toLowerCase().contains("bread") || newItemName.toLowerCase().contains("rice") || 
+                              newItemName.toLowerCase().contains("pasta") || newItemName.toLowerCase().contains("oats")) {
+                        newCategory = "Grains";
+                    } else if (newItemName.toLowerCase().contains("banana") || newItemName.toLowerCase().contains("apple") || 
+                              newItemName.toLowerCase().contains("orange")) {
+                        newCategory = "Fruits";
+                    } else if (newItemName.toLowerCase().contains("tomato") || newItemName.toLowerCase().contains("carrot") || 
+                              newItemName.toLowerCase().contains("potato") || newItemName.toLowerCase().contains("spinach")) {
+                        newCategory = "Vegetables";
+                    } else if (newItemName.toLowerCase().contains("chicken") || newItemName.toLowerCase().contains("beef") || 
+                              newItemName.toLowerCase().contains("salmon")) {
+                        newCategory = "Meat & Seafood";
+                    } else {
+                        newCategory = "General";
+                    }
                 } else {
                     JOptionPane.showMessageDialog(this, "Item Code not found.", "Input Error", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -389,153 +621,91 @@ public class SalesDataEntryPage extends UIBase {
                 return;
             }
 
+            double newTotalPrice = newQuantity * newPricePerUnit;
 
-            double totalPrice = quantity * pricePerUnit;
+            // Find the original entry to update
+            try {
+                List<SalesEntry> allEntries = dbHelper.getAllSalesEntries();
+                String originalItemCode = (String) itemCodeObj;
+                
+                // Find the matching entry
+                SalesEntry entryToUpdate = null;
+                for (SalesEntry entry : allEntries) {
+                    if (entry != null && 
+                        entry.getItemId().equals(originalItemCode) && 
+                        entry.getSalesManagerId().equals(currentUser.getUserId()) &&
+                        entry.getDate().toString().equals(dateObj.toString())) {
+                        entryToUpdate = entry;
+                        break;
+                    }
+                }
 
-            // Generate a unique entry ID. A more robust method might be needed.
-            String entryId = "SALE" + System.currentTimeMillis();
+                if (entryToUpdate != null) {
+                    // Update the entry
+                    entryToUpdate.setDate(newDate);
+                    entryToUpdate.setItemId(newItemCode);
+                    entryToUpdate.setItemName(newItemName);
+                    entryToUpdate.setQuantity(newQuantity);
+                    entryToUpdate.setCategory(newCategory);
+                    entryToUpdate.setPricePerUnit(newPricePerUnit);
+                    entryToUpdate.setTotalPrice(newTotalPrice);
+                    
+                    // Save to database
+                    dbHelper.updateSalesEntry(entryToUpdate);
 
-            SalesEntry newEntry = new SalesEntry(entryId, date, itemCode, itemName, quantity, category, pricePerUnit, totalPrice, currentUser.getUserId());
+                    // Update the table model
+                    tableModel.setValueAt(newDate, selectedRow, 0);
+                    tableModel.setValueAt(newItemCode, selectedRow, 1);
+                    tableModel.setValueAt(newItemName, selectedRow, 2);
+                    tableModel.setValueAt(newQuantity, selectedRow, 3);
+                    tableModel.setValueAt(newCategory, selectedRow, 4);
+                    tableModel.setValueAt(String.format("%.2f", newPricePerUnit), selectedRow, 5);
+                    tableModel.setValueAt(String.format("%.2f", newTotalPrice), selectedRow, 6);
 
-            // Add to the table model. Saving to file happens with "Save".
-            tableModel.addRow(new Object[]{
-                    newEntry.getDate(),
-                    newEntry.getItemId(),
-                    newEntry.getItemName(),
-                    newEntry.getQuantity(),
-                    newEntry.getCategory(),
-                    newEntry.getPricePerUnit(),
-                    newEntry.getTotalPrice()
-            });
+                    JOptionPane.showMessageDialog(this, "Sales entry updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    logSystemAction(SystemLog.ACTION_UPDATE, "Edited sales entry for item: " + newItemCode);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Could not find the original entry to update.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
 
-            JOptionPane.showMessageDialog(this, "Entry added to table. Click 'Save' to save to file.", "Info", JOptionPane.INFORMATION_MESSAGE);
-            logSystemAction(SystemLog.ACTION_CREATE, "Created new sales entry for item: " + itemCode);
-            handleResetForm(); // Clear form after adding to table
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error updating sales entry: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
 
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this, "Invalid date format. Please use YYYY-MM-DD.", "Input Error", JOptionPane.ERROR_MESSAGE);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid quantity. Please enter a number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid number format for quantity.", "Input Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
     }
-
-    private void handleEditEntry() {
-        int selectedRow = salesTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select an entry to edit.", "No Selection", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Get data from the selected row
-        Object dateObj = tableModel.getValueAt(selectedRow, 0);
-        Object itemCodeObj = tableModel.getValueAt(selectedRow, 1);
-        Object itemNameObj = tableModel.getValueAt(selectedRow, 2);
-        Object quantityObj = tableModel.getValueAt(selectedRow, 3);
-        Object categoryObj = tableModel.getValueAt(selectedRow, 4);
-        Object pricePerUnitObj = tableModel.getValueAt(selectedRow, 5);
-        Object totalPriceObj = tableModel.getValueAt(selectedRow, 6);
+}
 
 
-        // Populate a form or dialog for editing
-        JTextField editDateField = new JTextField(dateObj != null ? dateObj.toString() : "");
-        JTextField editItemCodeField = new JTextField(itemCodeObj != null ? itemCodeObj.toString() : "");
-        JTextField editItemNameField = new JTextField(itemNameObj != null ? itemNameObj.toString() : "");
-        JTextField editQuantityField = new JTextField(quantityObj != null ? quantityObj.toString() : "");
-        JTextField editCategoryField = new JTextField(categoryObj != null ? categoryObj.toString() : "");
-        JTextField editPricePerUnitField = new JTextField(pricePerUnitObj != null ? pricePerUnitObj.toString() : "");
-        // Total price will be calculated
 
-
-        JPanel panel = new JPanel(new GridLayout(0, 1));
-        panel.add(new JLabel("Date (YYYY-MM-DD):"));
-        panel.add(editDateField);
-        panel.add(new JLabel("Item Code:"));
-        panel.add(editItemCodeField);
-        panel.add(new JLabel("Item Name:"));
-        panel.add(editItemNameField);
-        panel.add(new JLabel("Sales Quantity:"));
-        panel.add(editQuantityField);
-        panel.add(new JLabel("Category:"));
-        panel.add(editCategoryField);
-        panel.add(new JLabel("Price per unit:"));
-        panel.add(editPricePerUnitField);
-
-
-        int result = JOptionPane.showConfirmDialog(this, panel, "Edit Sales Entry", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
-            try {
-                // Get updated values from fields
-                String newDateStr = editDateField.getText().trim();
-                String newItemCode = editItemCodeField.getText().trim();
-                String newItemName = editItemNameField.getText().trim();
-                String newQuantityStr = editQuantityField.getText().trim();
-                String newCategory = editCategoryField.getText().trim();
-                String newPricePerUnitStr = editPricePerUnitField.getText().trim();
-
-                if (newDateStr.isEmpty() || newItemCode.isEmpty() || newQuantityStr.isEmpty() || newItemName.isEmpty() || newCategory.isEmpty() || newPricePerUnitStr.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "All fields are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                LocalDate newDate = LocalDate.parse(newDateStr);
-                int newQuantity = Integer.parseInt(newQuantityStr);
-                double newPricePerUnit = Double.parseDouble(newPricePerUnitStr);
-                double newTotalPrice = newQuantity * newPricePerUnit;
-
-                // Update the table model directly
-                tableModel.setValueAt(newDate, selectedRow, 0);
-                tableModel.setValueAt(newItemCode, selectedRow, 1);
-                tableModel.setValueAt(newItemName, selectedRow, 2);
-                tableModel.setValueAt(newQuantity, selectedRow, 3);
-                tableModel.setValueAt(newCategory, selectedRow, 4);
-                tableModel.setValueAt(newPricePerUnit, selectedRow, 5);
-                tableModel.setValueAt(newTotalPrice, selectedRow, 6);
-
-
-                JOptionPane.showMessageDialog(this, "Entry updated in table. Click 'Save' to save to file.", "Info", JOptionPane.INFORMATION_MESSAGE);
-                logSystemAction(SystemLog.ACTION_UPDATE, "Edited sales entry for item: " + newItemCode);
-
-            } catch (DateTimeParseException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid date format. Please use YYYY-MM-DD.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid number format for quantity or price.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    private void handleDeleteEntry() {
-        int selectedRow = salesTable.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select an entry to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete this sales entry?",
-                "Confirm Delete",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            // In a real application, you would also need to delete this from the data file.
-            // For this example, we are only removing it from the table model.
-            String itemId = (String) tableModel.getValueAt(selectedRow, 1); // Get item ID before deleting
-            tableModel.removeRow(selectedRow);
-            JOptionPane.showMessageDialog(this, "Entry deleted from table. Click 'Save' to update file.", "Success", JOptionPane.INFORMATION_MESSAGE);
-            logSystemAction(SystemLog.ACTION_DELETE, "Deleted sales entry for item: " + itemId);
-        }
-    }
+    
 
     private void handleSaveEntries() {
-        JOptionPane.showMessageDialog(this, "Saved!", "Information", JOptionPane.INFORMATION_MESSAGE);
-        logSystemAction(SystemLog.ACTION_UPDATE, "Attempted to save sales entries");
+    try {
+        loadSalesEntries();
+        
+        JOptionPane.showMessageDialog(this, 
+            "All sales entries are saved!\nData refreshed from database.", 
+            "Save Complete", 
+            JOptionPane.INFORMATION_MESSAGE);
+        logSystemAction(SystemLog.ACTION_UPDATE, "Refreshed sales entries data");
+        
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this,
+            "Error during save operation: " + ex.getMessage(),
+            "Save Error",
+            JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
     }
+}
 
 
     private void handleResetForm() {
