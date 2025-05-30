@@ -1,5 +1,4 @@
 itemCode,itemName,supplierId,stockQuantity,pricePerUnit
-ITEM002,Whole Wheat Breaddsd,SUP002,200,3.20
 ITEM003,Organic Bananas 1kg,SUP003,180,6.80
 ITEM004,Chicken Breast 1kg,SUP001,120,15.90
 ITEM005,Brown Rice 5kg,SUP004,80,22.50

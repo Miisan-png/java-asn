@@ -5,11 +5,13 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import models.Item;
 import models.User;
+import models.SystemLog;
 import database.DatabaseHelper;
 
 public class ManageItemsPage extends UIBase {
@@ -66,7 +68,9 @@ public class ManageItemsPage extends UIBase {
                 Object[] rowData = {
                     item.getItemCode(),
                     item.getItemName(),
-                    item.getSupplierId()
+                    item.getSupplierId(),
+                    item.getStockQuantity(),
+                    String.format("%.2f", item.getPricePerUnit())
                 };
                 tableModel.addRow(rowData);
             }
@@ -227,7 +231,7 @@ public class ManageItemsPage extends UIBase {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     
-        String[] columnNames = {"Item Code", "Item Name", "Supplier ID"};
+        String[] columnNames = {"Item Code", "Item Name", "Supplier ID", "Stock Quantity", "Price Per Unit"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -257,91 +261,17 @@ public class ManageItemsPage extends UIBase {
     
         JButton addButton = new JButton("Add Item");
         styleButton(addButton);
-        addButton.addActionListener(e -> {
-            int choice = JOptionPane.showConfirmDialog(
-                this,
-                "Are you sure you want to add a new item?",
-                "Add Item Confirmation",
-                JOptionPane.YES_NO_OPTION
-            );
-            if (choice == JOptionPane.YES_OPTION) {
-                setVisible(false);
-                SwingUtilities.invokeLater(() -> {
-                    AddItemPage addPage = new AddItemPage(currentUser, this);
-                    addPage.setVisible(true);
-                });
-            }
-        });
+        addButton.addActionListener(e -> handleAddItem());
         buttonsPanel.add(addButton);
     
         JButton editButton = new JButton("Edit Item");
         styleButton(editButton);
-        editButton.addActionListener(e -> {
-            int selectedRow = itemsTable.getSelectedRow();
-            if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(this,
-                    "Please select an item to edit.",
-                    "No Selection",
-                    JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            
-            String itemCode = (String) itemsTable.getValueAt(selectedRow, 0);
-            String itemName = (String) itemsTable.getValueAt(selectedRow, 1);
-            String supplierId = (String) itemsTable.getValueAt(selectedRow, 2);
-            
-            Item selectedItem = new Item(itemCode, itemName, supplierId);
-            
-            setVisible(false);
-            SwingUtilities.invokeLater(() -> {
-                EditItemPage editPage = new EditItemPage(currentUser, this, selectedItem);
-                editPage.setVisible(true);
-            });
-        });
+        editButton.addActionListener(e -> handleEditItem());
         buttonsPanel.add(editButton);
     
         JButton deleteButton = new JButton("Delete Item");
         styleButton(deleteButton);
-        deleteButton.addActionListener(e -> {
-            int selectedRow = itemsTable.getSelectedRow();
-            if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(this,
-                    "Please select an item to delete.",
-                    "No Selection",
-                    JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-    
-            String itemCode = (String) itemsTable.getValueAt(selectedRow, 0);
-            String itemName = (String) itemsTable.getValueAt(selectedRow, 1);
-    
-            int confirm = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete item '" + itemName + "'?",
-                "Confirm Delete",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
-    
-            if (confirm == JOptionPane.YES_OPTION) {
-                try {
-                    DatabaseHelper dbHelper = new DatabaseHelper();
-                    dbHelper.deleteItem(itemCode);
-    
-                    tableModel.removeRow(selectedRow);
-                    JOptionPane.showMessageDialog(this,
-                        "Item deleted successfully.",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-    
-                    loadItems();
-    
-                } catch (IOException | IllegalArgumentException ex) {
-                    JOptionPane.showMessageDialog(this,
-                        "Error deleting item: " + ex.getMessage(),
-                        "Delete Failed",
-                        JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
+        deleteButton.addActionListener(e -> handleDeleteItem());
         buttonsPanel.add(deleteButton);
     
         contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
@@ -355,7 +285,6 @@ public class ManageItemsPage extends UIBase {
     
         List<String> supplierIds = new ArrayList<>();
         supplierIds.add("All Items");
-        
         
         if (itemsList != null) {
             for (Item item : itemsList) {
@@ -380,6 +309,238 @@ public class ManageItemsPage extends UIBase {
             filterMenu.show(filterBtn, 0, filterBtn.getHeight());
         });
     }
+
+    private void handleAddItem() {
+        JPanel formPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JTextField itemNameField = new JTextField();
+        JTextField supplierIdField = new JTextField();
+        JTextField stockQuantityField = new JTextField("0");
+        JTextField pricePerUnitField = new JTextField("0.00");
+
+        formPanel.add(new JLabel("Item Name:"));
+        formPanel.add(itemNameField);
+        formPanel.add(new JLabel("Supplier ID:"));
+        formPanel.add(supplierIdField);
+        formPanel.add(new JLabel("Stock Quantity:"));
+        formPanel.add(stockQuantityField);
+        formPanel.add(new JLabel("Price Per Unit:"));
+        formPanel.add(pricePerUnitField);
+
+        int result = JOptionPane.showConfirmDialog(
+            this,
+            formPanel,
+            "Add New Item",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            String itemName = itemNameField.getText().trim();
+            String supplierId = supplierIdField.getText().trim();
+            String stockQtyStr = stockQuantityField.getText().trim();
+            String priceStr = pricePerUnitField.getText().trim();
+
+            if (itemName.isEmpty() || supplierId.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Item Name and Supplier ID cannot be empty.",
+                    "Validation Error",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                int stockQuantity = Integer.parseInt(stockQtyStr);
+                double pricePerUnit = Double.parseDouble(priceStr);
+                
+                if (stockQuantity < 0 || pricePerUnit < 0) {
+                    JOptionPane.showMessageDialog(this,
+                        "Stock quantity and price must be non-negative.",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                DatabaseHelper dbHelper = new DatabaseHelper();
+                List<Item> allItems = dbHelper.getAllItems();
+                
+                // Check for duplicates
+                boolean duplicateExists = allItems.stream().anyMatch(item ->
+                        item.getItemName().equalsIgnoreCase(itemName) &&
+                        item.getSupplierId().equalsIgnoreCase(supplierId));
+
+                if (duplicateExists) {
+                    JOptionPane.showMessageDialog(this,
+                            "An item with the same name and supplier already exists.",
+                            "Duplicate Item",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                // Generate new item code
+                String newItemCode = "ITEM" + String.format("%03d", allItems.size() + 1);
+                Item newItem = new Item(newItemCode, itemName, supplierId, stockQuantity, pricePerUnit);
+                dbHelper.addItem(newItem);
+
+                JOptionPane.showMessageDialog(this,
+                    "Item added successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                logSystemAction(SystemLog.ACTION_CREATE, "Added new item: " + newItemCode);
+                loadItems();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this,
+                    "Please enter valid numbers for stock quantity and price.",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
+            } catch (IOException | IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this,
+                    "Error adding item: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void handleEditItem() {
+        int selectedRow = itemsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select an item to edit.",
+                "No Selection",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        String itemCode = (String) itemsTable.getValueAt(selectedRow, 0);
+        String itemName = (String) itemsTable.getValueAt(selectedRow, 1);
+        String supplierId = (String) itemsTable.getValueAt(selectedRow, 2);
+        String stockQty = String.valueOf(itemsTable.getValueAt(selectedRow, 3));
+        String price = String.valueOf(itemsTable.getValueAt(selectedRow, 4));
+
+        JPanel formPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JTextField itemNameField = new JTextField(itemName);
+        JTextField supplierIdField = new JTextField(supplierId);
+        JTextField stockQuantityField = new JTextField(stockQty);
+        JTextField pricePerUnitField = new JTextField(price);
+
+        formPanel.add(new JLabel("Item Code: " + itemCode));
+        formPanel.add(new JLabel("")); // Empty cell
+        formPanel.add(new JLabel("Item Name:"));
+        formPanel.add(itemNameField);
+        formPanel.add(new JLabel("Supplier ID:"));
+        formPanel.add(supplierIdField);
+        formPanel.add(new JLabel("Stock Quantity:"));
+        formPanel.add(stockQuantityField);
+        formPanel.add(new JLabel("Price Per Unit:"));
+        formPanel.add(pricePerUnitField);
+
+        int result = JOptionPane.showConfirmDialog(
+            this,
+            formPanel,
+            "Edit Item",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            String newItemName = itemNameField.getText().trim();
+            String newSupplierId = supplierIdField.getText().trim();
+            String newStockQtyStr = stockQuantityField.getText().trim();
+            String newPriceStr = pricePerUnitField.getText().trim();
+
+            if (newItemName.isEmpty() || newSupplierId.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Item Name and Supplier ID cannot be empty.",
+                    "Validation Error",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                int newStockQuantity = Integer.parseInt(newStockQtyStr);
+                double newPricePerUnit = Double.parseDouble(newPriceStr);
+                
+                if (newStockQuantity < 0 || newPricePerUnit < 0) {
+                    JOptionPane.showMessageDialog(this,
+                        "Stock quantity and price must be non-negative.",
+                        "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                DatabaseHelper dbHelper = new DatabaseHelper();
+                Item updatedItem = new Item(itemCode, newItemName, newSupplierId, newStockQuantity, newPricePerUnit);
+                dbHelper.updateItem(updatedItem);
+
+                JOptionPane.showMessageDialog(this,
+                    "Item updated successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                logSystemAction(SystemLog.ACTION_UPDATE, "Updated item: " + itemCode);
+                loadItems();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this,
+                    "Please enter valid numbers for stock quantity and price.",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE);
+            } catch (IOException | IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this,
+                    "Error updating item: " + ex.getMessage(),
+                    "Update Failed",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void handleDeleteItem() {
+        int selectedRow = itemsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Please select an item to delete.",
+                "No Selection",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String itemCode = (String) itemsTable.getValueAt(selectedRow, 0);
+        String itemName = (String) itemsTable.getValueAt(selectedRow, 1);
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to delete item '" + itemName + "' (" + itemCode + ")?",
+            "Confirm Delete",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                DatabaseHelper dbHelper = new DatabaseHelper();
+                dbHelper.deleteItem(itemCode);
+
+                tableModel.removeRow(selectedRow);
+                JOptionPane.showMessageDialog(this,
+                    "Item deleted successfully.",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+                logSystemAction(SystemLog.ACTION_DELETE, "Deleted item: " + itemCode);
+                loadItems();
+
+            } catch (IOException | IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this,
+                    "Error deleting item: " + ex.getMessage(),
+                    "Delete Failed",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
     
     private void styleButton(JButton button) {
         button.setBackground(new Color(120, 120, 120));
@@ -398,20 +559,22 @@ public class ManageItemsPage extends UIBase {
             dashboard.setVisible(true);
         });
     }
-    
-    public void launchAddItemPage() {
-        setVisible(false);
-        SwingUtilities.invokeLater(() -> {
-            AddItemPage addPage = new AddItemPage(currentUser, this);
-            addPage.setVisible(true);
-        });
-    }
-    
-    public void launchEditItemPage(Item item) {
-        setVisible(false);
-        SwingUtilities.invokeLater(() -> {
-            EditItemPage editPage = new EditItemPage(currentUser, this, item);
-            editPage.setVisible(true);
-        });
+
+    private void logSystemAction(String action, String details) {
+        try {
+            DatabaseHelper db = new DatabaseHelper();
+            SystemLog log = new SystemLog(
+                    "LOG" + System.currentTimeMillis(),
+                    currentUser.getUserId(),
+                    currentUser.getUsername(),
+                    action,
+                    details,
+                    LocalDateTime.now(),
+                    currentUser.getRole()
+            );
+            db.addSystemLog(log);
+        } catch (IOException e) {
+            System.out.println("Failed to log system action: " + e.getMessage());
+        }
     }
 }
