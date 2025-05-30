@@ -58,23 +58,24 @@ public class ManageSuppliersPage extends UIBase {
     }
 
     private void filterSuppliers(String status) {
-        tableModel.setRowCount(0);
-        for (Supplier supplier : suppliersList) {
-            if (supplier != null && (status == null || supplier.getStatus().equals(status))) {
-                Object[] rowData = {
-                        supplier.getSupplierId(),
-                        supplier.getSupplierName(),
-                        supplier.getContactPerson(),
-                        supplier.getContactNumber(),
-                        supplier.getEmail(),
-                        supplier.getSuppliedItems(),
-                        supplier.getLastOrderDate(),
-                        supplier.getStatus()
-                };
-                tableModel.addRow(rowData);
-            }
+    tableModel.setRowCount(0);
+    for (Supplier supplier : suppliersList) {
+        if (supplier != null && (status == null || supplier.getStatus().equals(status))) {
+            Object[] rowData = {
+                    supplier.getSupplierId(),
+                    supplier.getSupplierName(),
+                    supplier.getContactPerson(),
+                    supplier.getContactNumber(),
+                    supplier.getEmail(),
+                    supplier.getAddress(), 
+                    supplier.getSuppliedItems(),
+                    supplier.getLastOrderDate(),
+                    supplier.getStatus()
+            };
+            tableModel.addRow(rowData);
         }
     }
+}
 
     @Override
     protected void initUI() {

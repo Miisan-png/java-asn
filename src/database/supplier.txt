@@ -1,7 +1,7 @@
 supplierId,supplierName,contactPerson,contactNumber,email,address,suppliedItems,lastOrderDate,status
 SUP001,Fresh Farm Dairy,John Miller,+60123456789,john@freshfarm.com,"123 Dairy Lane, Selangor, Malaysia","Milk, Chicken, Salmon",2025-05-20,Active
 SUP002,Golden Bakery Supply,Sarah Wong,+60198765432,sarah@goldenbakery.com,"456 Baker Street, Kuala Lumpur, Malaysia","Bread, Eggs, Yogurt",2025-05-18,Active
-SUP003,Green Valley Produce,Ahmad Rahman,+60187654321,ahmad@greenvalley.com,"789 Garden Road, Selangor, Malaysia","Bananas, Tomatoes, Sweet Potatoes, Apples, Carrots, Spinach",2025-05-22,Active
+SUP003,Green Valley Produce,Ahmad Rahman,+60187654321,ahmad@greenvalley.com,"789 Garden Road, Selangor, Malaysia","Bananas, Tomatoes, Sweet Potatoes, Apples, Carrots,Spinach",2025-05-22,Inactive
 SUP004,Grain Master Supplies,Lisa Chen,+60176543210,lisa@grainmaster.com,"321 Rice Mill Avenue, Penang, Malaysia","Brown Rice, Pasta, Oats",2025-05-19,Active
 SUP005,Dairy Gold Enterprise,Robert Lim,+60165432109,robert@dairygold.com,"654 Cheese Factory Road, Johor, Malaysia","Cheddar Cheese, Orange Juice",2025-05-21,Active
 SUP006,Premium Pantry Co,Maria Santos,+60154321098,maria@premiumpantry.com,"987 Gourmet Street, Kuala Lumpur, Malaysia","Olive Oil, Honey",2025-05-17,Active
