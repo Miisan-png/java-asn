@@ -48,7 +48,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
 
         setContentPane(root);
         
-        
+        // Load initial data
         loadPurchaseOrders();
     }
 
@@ -164,16 +164,16 @@ public class UpdateStockFromPOPage extends admin.UIBase {
         content.setBackground(Color.WHITE);
         content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        
+        // Create filter panel at the top
         JPanel filterPanel = createFilterPanel();
         content.add(filterPanel, BorderLayout.NORTH);
 
-        
+        // Create table
         tableModel = new DefaultTableModel(new Object[]{
             "PO ID", "Item Code", "Item Name", "Supplier", "Ordered Qty", "Received Qty", "Order Date", "Status"
         }, 0) {
             public boolean isCellEditable(int r, int c) {
-                
+                // Only "Received Qty" column (index 5) is editable, and only for approved orders
                 if (c == 5) {
                     try {
                         String status = (String) getValueAt(r, 7);
@@ -187,7 +187,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
             
             @Override
             public Class<?> getColumnClass(int column) {
-                if (column == 4 || column == 5) { 
+                if (column == 4 || column == 5) { // Quantity columns
                     return Integer.class;
                 }
                 return String.class;
@@ -204,24 +204,24 @@ public class UpdateStockFromPOPage extends admin.UIBase {
         poTable.setShowGrid(true);
         poTable.setGridColor(new Color(230, 230, 230));
 
-        
-        poTable.getColumnModel().getColumn(0).setPreferredWidth(80);  
-        poTable.getColumnModel().getColumn(1).setPreferredWidth(100); 
-        poTable.getColumnModel().getColumn(2).setPreferredWidth(150); 
-        poTable.getColumnModel().getColumn(3).setPreferredWidth(100); 
-        poTable.getColumnModel().getColumn(4).setPreferredWidth(80);  
-        poTable.getColumnModel().getColumn(5).setPreferredWidth(90);  
-        poTable.getColumnModel().getColumn(6).setPreferredWidth(100); 
-        poTable.getColumnModel().getColumn(7).setPreferredWidth(80);  
+        // Set column widths
+        poTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // PO ID
+        poTable.getColumnModel().getColumn(1).setPreferredWidth(100); // Item Code
+        poTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Item Name
+        poTable.getColumnModel().getColumn(3).setPreferredWidth(100); // Supplier
+        poTable.getColumnModel().getColumn(4).setPreferredWidth(80);  // Ordered Qty
+        poTable.getColumnModel().getColumn(5).setPreferredWidth(90);  // Received Qty
+        poTable.getColumnModel().getColumn(6).setPreferredWidth(100); // Order Date
+        poTable.getColumnModel().getColumn(7).setPreferredWidth(80);  // Status
 
-        
+        // Custom renderer for status and editable cells
         poTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 
                 if (!isSelected) {
-                    if (column == 7) { 
+                    if (column == 7) { // Status column
                         String status = value != null ? value.toString() : "";
                         switch (status) {
                             case PurchaseOrder.STATUS_COMPLETED -> {
@@ -237,7 +237,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
                                 c.setForeground(new Color(255, 145, 0));
                             }
                         }
-                    } else if (column == 5) { 
+                    } else if (column == 5) { // Received Qty column - highlight editable cells
                         try {
                             String status = (String) table.getValueAt(row, 7);
                             if (PurchaseOrder.STATUS_COMPLETED.equals(status)) {
@@ -264,7 +264,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         content.add(scrollPane, BorderLayout.CENTER);
 
-        
+        // Create action buttons panel
         JPanel actionsPanel = createActionsPanel();
         content.add(actionsPanel, BorderLayout.SOUTH);
 
@@ -285,18 +285,18 @@ public class UpdateStockFromPOPage extends admin.UIBase {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
 
-        
+        // Left side - Search and filters
         JPanel leftFilters = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         leftFilters.setBackground(Color.WHITE);
 
-        
+        // Search field
         JLabel searchLabel = new JLabel("Search:");
         searchLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
         searchField = new JTextField(15);
         searchField.setFont(new Font("SansSerif", Font.PLAIN, 12));
         searchField.addActionListener(e -> applyFilters());
 
-        
+        // Status filter dropdown
         JLabel statusLabel = new JLabel("Status:");
         statusLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
         String[] statusOptions = {"All Status", PurchaseOrder.STATUS_PENDING, PurchaseOrder.STATUS_COMPLETED, PurchaseOrder.STATUS_CANCELLED};
@@ -304,7 +304,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
         statusFilter.setFont(new Font("SansSerif", Font.PLAIN, 12));
         statusFilter.addActionListener(e -> applyFilters());
 
-        
+        // Supplier filter dropdown
         JLabel supplierLabel = new JLabel("Supplier:");
         supplierLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
         supplierFilter = new JComboBox<>();
@@ -320,15 +320,14 @@ public class UpdateStockFromPOPage extends admin.UIBase {
         leftFilters.add(supplierLabel);
         leftFilters.add(supplierFilter);
 
-        
+        // Right side - Just some spacing or info
         JPanel rightActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         rightActions.setBackground(Color.WHITE);
 
-        JButton refreshButton = createActionButton("🔄 Refresh", this::loadPurchaseOrders);
-        JButton clearFiltersButton = createActionButton("Clear Filters", this::clearFilters);
-
-        rightActions.add(refreshButton);
-        rightActions.add(clearFiltersButton);
+        JLabel infoLabel = new JLabel("Use dropdown filters to refine results");
+        infoLabel.setFont(new Font("SansSerif", Font.ITALIC, 11));
+        infoLabel.setForeground(Color.GRAY);
+        rightActions.add(infoLabel);
 
         filterPanel.add(leftFilters, BorderLayout.WEST);
         filterPanel.add(rightActions, BorderLayout.EAST);
@@ -337,7 +336,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
     }
 
     private JPanel createActionsPanel() {
-        JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         actionsPanel.setBackground(Color.WHITE);
         actionsPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(
@@ -350,9 +349,9 @@ public class UpdateStockFromPOPage extends admin.UIBase {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
 
-        JButton confirmReceiptBtn = createMainActionButton("✅ Confirm Receipt", this::confirmReceipt);
-        JButton updateQuantityBtn = createMainActionButton("📝 Update Received Qty", this::updateReceivedQuantity);
-        JButton viewDetailsBtn = createMainActionButton("👁️ View Details", this::viewOrderDetails);
+        JButton confirmReceiptBtn = createActionButton("Confirm Receipt", this::confirmReceipt);
+        JButton updateQuantityBtn = createActionButton("Update Received Qty", this::updateReceivedQuantity);
+        JButton viewDetailsBtn = createActionButton("View Details", this::viewOrderDetails);
 
         actionsPanel.add(confirmReceiptBtn);
         actionsPanel.add(updateQuantityBtn);
@@ -377,7 +376,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
     private JButton createMainActionButton(String text, Runnable action) {
         JButton btn = new JButton(text);
         btn.setPreferredSize(new Dimension(180, 40));
-        btn.setBackground(new Color(11, 61, 145));
+        btn.setBackground(new Color(96, 96, 96));
         btn.setForeground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setFont(new Font("SansSerif", Font.BOLD, 13));
@@ -395,11 +394,11 @@ public class UpdateStockFromPOPage extends admin.UIBase {
                 allPurchaseOrders = List.of();
             }
             
-            
-            updateSupplierFilter();
-            
-            
-            applyFilters();
+            // Populate supplier filter first, before applying filters
+            SwingUtilities.invokeLater(() -> {
+                updateSupplierFilter();
+                applyFilters();
+            });
             
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, 
@@ -411,15 +410,32 @@ public class UpdateStockFromPOPage extends admin.UIBase {
     }
 
     private void updateSupplierFilter() {
-        supplierFilter.removeAllItems();
-        supplierFilter.addItem("All Suppliers");
-        
-        if (allPurchaseOrders != null) {
-            allPurchaseOrders.stream()
-                    .map(PurchaseOrder::getSupplierId)
-                    .distinct()
-                    .sorted()
-                    .forEach(supplier -> supplierFilter.addItem(supplier));
+        try {
+            // Temporarily remove the action listener to prevent firing during updates
+            java.awt.event.ActionListener[] listeners = supplierFilter.getActionListeners();
+            for (java.awt.event.ActionListener listener : listeners) {
+                supplierFilter.removeActionListener(listener);
+            }
+            
+            supplierFilter.removeAllItems();
+            supplierFilter.addItem("All Suppliers");
+            
+            if (allPurchaseOrders != null) {
+                allPurchaseOrders.stream()
+                        .filter(po -> po != null && po.getSupplierId() != null)
+                        .map(PurchaseOrder::getSupplierId)
+                        .distinct()
+                        .sorted()
+                        .forEach(supplier -> supplierFilter.addItem(supplier));
+            }
+            
+            // Re-add the action listeners
+            for (java.awt.event.ActionListener listener : listeners) {
+                supplierFilter.addActionListener(listener);
+            }
+            
+        } catch (Exception e) {
+            System.out.println("Error updating supplier filter: " + e.getMessage());
         }
     }
 
@@ -435,7 +451,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
         List<PurchaseOrder> filteredList = allPurchaseOrders.stream()
                 .filter(po -> po != null)
                 .filter(po -> {
-                    
+                    // Search filter
                     if (!searchText.isEmpty()) {
                         return po.getOrderId().toLowerCase().contains(searchText) ||
                                po.getItemCode().toLowerCase().contains(searchText) ||
@@ -445,14 +461,14 @@ public class UpdateStockFromPOPage extends admin.UIBase {
                     return true;
                 })
                 .filter(po -> {
-                    
+                    // Status filter
                     if (!"All Status".equals(selectedStatus)) {
                         return po.getStatus().equals(selectedStatus);
                     }
                     return true;
                 })
                 .filter(po -> {
-                    
+                    // Supplier filter
                     if (!"All Suppliers".equals(selectedSupplier)) {
                         return po.getSupplierId().equals(selectedSupplier);
                     }
@@ -466,8 +482,14 @@ public class UpdateStockFromPOPage extends admin.UIBase {
     private void updateTable(List<PurchaseOrder> poList) {
         tableModel.setRowCount(0);
         for (PurchaseOrder po : poList) {
-            String orderDate = po.getOrderDate() != null ? 
-                po.getOrderDate().format(displayDateFormatter) : "N/A";
+            String orderDate = "N/A";
+            try {
+                if (po.getOrderDate() != null) {
+                    orderDate = po.getOrderDate().format(displayDateFormatter);
+                }
+            } catch (Exception e) {
+                orderDate = po.getOrderDate() != null ? po.getOrderDate().toString() : "N/A";
+            }
                 
             tableModel.addRow(new Object[]{
                 po.getOrderId(),
@@ -475,7 +497,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
                 po.getItemName() != null ? po.getItemName() : "N/A",
                 po.getSupplierId(),
                 po.getQuantity(),
-                po.getQuantity(), 
+                po.getQuantity(), // Default received quantity to ordered quantity
                 orderDate,
                 po.getStatus()
             });
@@ -485,7 +507,9 @@ public class UpdateStockFromPOPage extends admin.UIBase {
     private void clearFilters() {
         searchField.setText("");
         statusFilter.setSelectedIndex(0);
-        supplierFilter.setSelectedIndex(0);
+        if (supplierFilter.getItemCount() > 0) {
+            supplierFilter.setSelectedIndex(0);
+        }
         applyFilters();
     }
 
@@ -523,10 +547,10 @@ public class UpdateStockFromPOPage extends admin.UIBase {
             if (confirm == JOptionPane.YES_OPTION) {
                 DatabaseHelper db = new DatabaseHelper();
                 
-                
+                // Update stock quantity (add to existing stock)
                 db.updateStockQuantity(itemCode, receivedQty, true);
 
-                
+                // Log the action
                 SystemLog log = new SystemLog(
                         "LOG" + System.currentTimeMillis(),
                         currentUser.getUserId(),
@@ -543,7 +567,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
                     "Success",
                     JOptionPane.INFORMATION_MESSAGE);
 
-                loadPurchaseOrders(); 
+                loadPurchaseOrders(); // Refresh data
             }
 
         } catch (NumberFormatException ex) {

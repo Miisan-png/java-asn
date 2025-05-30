@@ -1344,12 +1344,22 @@ public List<SystemLog> getInventoryLogs() throws IOException {
 
 
 public void updateStockQuantity(String itemCode, int newQuantity) throws IOException {
+    updateStockQuantity(itemCode, newQuantity, false);
+}
+
+public void updateStockQuantity(String itemCode, int newQuantity, boolean addToExisting) throws IOException {
     List<Stock> stocks = getAllStock();
     boolean found = false;
 
     for (Stock stock : stocks) {
         if (stock.getItemCode().equals(itemCode)) {
-            stock.setQuantity(newQuantity);
+            if (addToExisting) {
+                // Add to existing quantity
+                stock.setQuantity(stock.getQuantity() + newQuantity);
+            } else {
+                // Set new quantity directly
+                stock.setQuantity(newQuantity);
+            }
             stock.setLastUpdated(LocalDate.now().toString());
             found = true;
             break;
@@ -1390,4 +1400,4 @@ public List<PurchaseOrder> getApprovedPurchaseOrders() throws IOException {
 
 
 
-}  
+}
