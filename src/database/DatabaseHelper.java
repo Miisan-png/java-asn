@@ -1358,4 +1358,17 @@ public void addStockItem(Stock stockItem) throws IOException {
     writeStockToFile(stocks);
 }
 
+public List<PurchaseOrder> getApprovedPurchaseOrders() throws IOException {
+    List<PurchaseOrder> allOrders = getAllPurchaseOrders();
+    List<PurchaseOrder> approvedOrders = new ArrayList<>();
+    for (PurchaseOrder po : allOrders) {
+        if ("Approved".equalsIgnoreCase(po.getStatus())) {
+            approvedOrders.add(po);
+        }
+    }
+    return approvedOrders;
+}
+
+
+
 }  

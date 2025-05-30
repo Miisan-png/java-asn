@@ -142,7 +142,7 @@ public class InventoryDashboardPage extends UIBase {
         contentPanel.add(createCard("Update\nStock\nLevels", () -> {
             dispose();
             SwingUtilities.invokeLater(() -> {
-                UpdateStockPage updateStockPage = new UpdateStockPage(currentUser);
+                UpdateStockFromPOPage updateStockPage = new UpdateStockFromPOPage(currentUser);
                 updateStockPage.setVisible(true);
             });
         }));
