@@ -334,32 +334,30 @@ public class UpdateStockFromPOPage extends admin.UIBase {
 
         return filterPanel;
     }
-
     private JPanel createActionsPanel() {
-        JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        actionsPanel.setBackground(Color.WHITE);
-        actionsPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(
-                        BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                        "Stock Update Actions",
-                        0,
-                        0,
-                        new Font("SansSerif", Font.BOLD, 14)
-                ),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
+    JPanel actionsPanel = new JPanel(new GridLayout(1, 3, 15, 0));
+    actionsPanel.setBackground(Color.WHITE);
+    actionsPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                    BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                    "Stock Update Actions",
+                    0,
+                    0,
+                    new Font("SansSerif", Font.BOLD, 14)
+            ),
+            BorderFactory.createEmptyBorder(15, 15, 20, 15)
+    ));
 
-        JButton confirmReceiptBtn = createActionButton("Confirm Receipt", this::confirmReceipt);
-        JButton updateQuantityBtn = createActionButton("Update Received Qty", this::updateReceivedQuantity);
-        JButton viewDetailsBtn = createActionButton("View Details", this::viewOrderDetails);
+    JButton confirmReceiptBtn = createActionButton("Confirm Receipt", this::confirmReceipt);
+    JButton updateQuantityBtn = createActionButton("Update Received Qty", this::updateReceivedQuantity);
+    JButton viewDetailsBtn = createActionButton("View Details", this::viewOrderDetails);
 
-        actionsPanel.add(confirmReceiptBtn);
-        actionsPanel.add(updateQuantityBtn);
-        actionsPanel.add(viewDetailsBtn);
+    actionsPanel.add(confirmReceiptBtn);
+    actionsPanel.add(updateQuantityBtn);
+    actionsPanel.add(viewDetailsBtn);
 
-        return actionsPanel;
-    }
-
+    return actionsPanel;
+}
     private JButton createActionButton(String text, Runnable action) {
         JButton btn = new JButton(text);
         btn.setPreferredSize(new Dimension(120, 35));
