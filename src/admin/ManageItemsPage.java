@@ -365,7 +365,7 @@ public class ManageItemsPage extends UIBase {
                 DatabaseHelper dbHelper = new DatabaseHelper();
                 List<Item> allItems = dbHelper.getAllItems();
                 
-                // Check for duplicates
+                
                 boolean duplicateExists = allItems.stream().anyMatch(item ->
                         item.getItemName().equalsIgnoreCase(itemName) &&
                         item.getSupplierId().equalsIgnoreCase(supplierId));
@@ -378,7 +378,7 @@ public class ManageItemsPage extends UIBase {
                     return;
                 }
 
-                // Generate new item code
+                
                 String newItemCode = "ITEM" + String.format("%03d", allItems.size() + 1);
                 Item newItem = new Item(newItemCode, itemName, supplierId, stockQuantity, pricePerUnit);
                 dbHelper.addItem(newItem);
@@ -430,7 +430,7 @@ public class ManageItemsPage extends UIBase {
         JTextField pricePerUnitField = new JTextField(price);
 
         formPanel.add(new JLabel("Item Code: " + itemCode));
-        formPanel.add(new JLabel("")); // Empty cell
+        formPanel.add(new JLabel("")); 
         formPanel.add(new JLabel("Item Name:"));
         formPanel.add(itemNameField);
         formPanel.add(new JLabel("Supplier ID:"));

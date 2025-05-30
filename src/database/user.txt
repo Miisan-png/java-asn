@@ -1,6 +1,6 @@
 userId,username,password,email,role
-ADMN001,a,a,admin@gmail.com,ADMN
-INV001,i,i,hama@mail.cpm,INV
-U001,f,f,j.cuambe@gmail.com,FIN
-U002,s,s,sha@gmail.com,SAL
-U003,p,p,zz@gmail.com,PUR
+ADMN001,admin,admin123!,admin@freshmart.com,ADMN
+INV001,i,i,inventory@freshmart.com,INV
+PUR001,purchase_manager,pur123!,purchase@freshmart.com,PUR
+FIN001,finance_manager,fin123!,finance@freshmart.com,FIN
+SAL001,sales_manager,sal123!,sales@freshmart.com,SAL

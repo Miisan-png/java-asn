@@ -1,4 +1,11 @@
 itemCode,itemName,quantity,location,lastUpdated,status
-ITEM001,Office Chair,50,Warehouse A,2025-05-23,In Stock
-ITEM002,Desk Lamp,30,Warehouse B,2025-05-23,In Stock
-ITEM003,Filing Cabinet,2222,Warehouse A,2025-05-23,In Stock
+ITEM001,Fresh Milk 1L,50,Cold Storage A,2025-05-25,In Stock
+ITEM002,Organic Carrots 1kg,80,Fresh Produce,2025-05-25,In Stock
+ITEM003,Atlantic Salmon 500g,25,Freezer Section,2025-05-25,In Stock
+ITEM004,Basmati Rice 5kg,40,Dry Goods,2025-05-25,In Stock
+ITEM005,Free Range Chicken 1kg,30,Meat Section,2025-05-25,In Stock
+ITEM006,Extra Virgin Olive Oil 500ml,60,Pantry Storage,2025-05-25,In Stock
+ITEM007,Red Apples 1kg,100,Fresh Produce,2025-05-25,In Stock
+ITEM008,Greek Yogurt 200g,45,Cold Storage B,2025-05-25,In Stock
+ITEM009,Fresh Prawns 500g,8,Freezer Section,2025-05-25,Low Stock
+ITEM010,Whole Wheat Bread,35,Bakery Section,2025-05-25,In Stock

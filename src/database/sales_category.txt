@@ -1,6 +1,8 @@
 categoryId,categoryName,description
-CAT001,Furniture,Office furniture and fixtures
-CAT002,Electronics,Computers, printers, and other electronic devices
-CAT003,Office Supplies,Stationery, paper, and other consumables
-CAT004,Appliances,Kitchen and office appliances
-CAT005,Communication,Phones and communication equipment
+CAT001,Dairy,Milk products and dairy items
+CAT002,Vegetables,Fresh vegetables and produce
+CAT003,Fruits,Fresh fruits and seasonal produce
+CAT004,Meat,Fresh meat and poultry
+CAT005,Seafood,Fresh fish and seafood
+CAT006,Grains,Rice, flour and grain products
+CAT007,Pantry,Oils, spices and condiments

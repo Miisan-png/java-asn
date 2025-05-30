@@ -1,7 +1,5 @@
-[2025-05-16T17:23:43.146457600] User Generalc marked PO PO005 as PAID - Amount: 15
-[2025-05-16T17:24:01.545542] User Generalc marked PO PO005 as PAID - Amount: 15
-[2025-05-16T18:10:14.317111800] Simulated payment for Order PO004 | Item:  | Amount: RM 315.00 | Supplier: SUP001 | User: Generalc
-[2025-05-16T18:10:37.389794500] User Generalc marked PO PO004 as PAID - Amount: 9
-[2025-05-16T18:10:47.449791800] Simulated payment for Order PO004 | Item:  | Amount: RM 315.00 | Supplier: SUP001 | User: Generalc
-[2025-05-16T18:48:21.744033200] User Generalc marked PO PO005 as PAID - Amount: 15
-[2025-05-16T18:48:28.713565200] Simulated payment for Order PO002 | Item: Apple MacBook | Amount: RM 4500.00 | Supplier: SUP005 | User: Generalc
+[2025-05-25T14:30:15.123456] User finance_manager marked PO PO002 as PAID - Amount: 272.00
+[2025-05-26T10:45:22.654321] Simulated payment for Order PO001 | Item: Organic Carrots 1kg | Amount: RM 160.00 | Supplier: SUP002 | User: finance_manager  
+[2025-05-27T16:20:33.987654] User finance_manager processed payment for PO003 | Item: Fresh Milk 1L | Amount: RM 135.00 | Supplier: SUP001
+[2025-05-28T09:15:44.456789] User finance_manager reviewed financial report - Total pending payments: RM 295.00
+[2025-05-29T11:30:55.789012] User finance_manager approved budget allocation for fresh produce purchases - RM 5000.00

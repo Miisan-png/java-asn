@@ -1,3 +1,5 @@
 logId,userId,username,action,details,timestamp,userRole
-INVLOG001,INV001,hamza,Create,Added new stock for ITEM001,2025-05-23 10:00:00,INVLOG1747937748652,U006,h,Update,Manual stock adjustment for item ITEM002. Quantity adjusted by 22. Reason: dasdas,2025-05-23 02:15:48,INV
-LOG1747939102562,U006,h,Update,Manual stock adjustment for item ITEM003. Quantity adjusted by 2222. Reason: testing,2025-05-23 02:38:22,INV
+INVLOG001,INV001,inventory_manager,Update,Updated stock for Fresh Milk - quantity adjusted by +20,2025-05-25 10:00:00,INV
+INVLOG002,INV001,inventory_manager,Alert,Low stock alert for Fresh Prawns - only 8 units remaining,2025-05-26 11:30:00,INV
+INVLOG003,INV001,inventory_manager,Update,Received fresh delivery of Red Apples - added 50 units,2025-05-27 09:15:00,INV
+INVLOG004,INV001,inventory_manager,Quality,Quality check completed for Atlantic Salmon - all items fresh,2025-05-27 14:20:00,INV

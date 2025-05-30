@@ -439,7 +439,7 @@ private void handleEditUser() {
     roleComboBox.setSelectedItem(role);
 
     formPanel.add(new JLabel("User ID: " + userId));
-    formPanel.add(new JLabel("")); // Empty cell
+    formPanel.add(new JLabel("")); 
     formPanel.add(new JLabel("Username:"));
     formPanel.add(usernameField);
     formPanel.add(new JLabel("Email:"));

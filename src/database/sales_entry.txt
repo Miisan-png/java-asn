@@ -1,1 +1,5 @@
 entryId,date,itemId,itemName,quantity,category,pricePerUnit,totalPrice,salesManagerId
+SALE001,2025-05-20,ITEM001,Fresh Milk 1L,15,Dairy,5.00,75.00,SAL001
+SALE002,2025-05-21,ITEM002,Organic Carrots 1kg,20,Vegetables,3.80,76.00,SAL001
+SALE003,ITEM007,Red Apples 1kg,25,Fruits,7.50,187.50,SAL001
+SALE004,2025-05-23,ITEM005,Free Range Chicken 1kg,8,Meat,14.50,116.00,SAL001
