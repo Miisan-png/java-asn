@@ -15,9 +15,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import models.User;
-// Import the correct UIBase for the sales package
 import sales.UIBase;
-import admin.MyProfilePage; // Assuming MyProfilePage remains in the admin package
+import admin.MyProfilePage; 
 
 public class SalesDashboardPage extends UIBase {
 
@@ -147,7 +146,7 @@ public class SalesDashboardPage extends UIBase {
 
         String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
                 ? currentUser.getUsername()
-                : "Username user";
+                : "S";
 
         JLabel userLabel = new JLabel(displayName + " ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));

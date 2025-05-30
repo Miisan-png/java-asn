@@ -240,40 +240,61 @@ public class SalesSystemLogsPage extends UIBase {
         JPanel headerPanel = new JPanel(new BorderLayout(10, 10));
         headerPanel.setBackground(Color.WHITE);
 
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        titlePanel.setBackground(Color.WHITE);
+        JLabel titleLabel = new JLabel("System Logs", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        titleLabel.setForeground(new Color(11, 61, 145));
+        titlePanel.add(titleLabel);
+        headerPanel.add(titlePanel, BorderLayout.NORTH);
 
-        JPanel filtersPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        filtersPanel.setBackground(Color.WHITE);
-        filtersPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        JPanel filtersContainer = new JPanel(new BorderLayout());
+        filtersContainer.setBackground(Color.WHITE);
+        filtersContainer.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
+        JPanel leftFiltersPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        leftFiltersPanel.setBackground(Color.WHITE);
 
         JLabel searchLabel = new JLabel("Search:");
         searchField = new JTextField(20);
         searchField.addActionListener(e -> filterLogs());
 
-
         JLabel actionLabel = new JLabel("Action:");
-        // Filter options relevant to Sales Manager actions
         String[] actionOptions = {"All", SystemLog.ACTION_LOGIN, SystemLog.ACTION_LOGOUT,
-                SystemLog.ACTION_CREATE, SystemLog.ACTION_UPDATE, SystemLog.ACTION_DELETE, SystemLog.ACTION_VIEW};
+                SystemLog.ACTION_CREATE, SystemLog.ACTION_UPDATE,
+                SystemLog.ACTION_DELETE, SystemLog.ACTION_VIEW};
         actionFilter = new JComboBox<>(actionOptions);
         actionFilter.addActionListener(e -> filterLogs());
 
+        leftFiltersPanel.add(searchLabel);
+        leftFiltersPanel.add(searchField);
+        leftFiltersPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+        leftFiltersPanel.add(actionLabel);
+        leftFiltersPanel.add(actionFilter);
 
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        rightPanel.setBackground(Color.WHITE);
+        
         JButton refreshButton = new JButton("Refresh");
-        styleButton(refreshButton); // Reuse styleButton
+        refreshButton.setBackground(new Color(11, 61, 145));
+        refreshButton.setForeground(Color.WHITE);
+        refreshButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        refreshButton.setFocusPainted(false);
+        refreshButton.setBorder(BorderFactory.createEmptyBorder(8, 25, 8, 25)); // Better padding
+        refreshButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        refreshButton.setPreferredSize(new Dimension(110, 35)); // Slightly wider
         refreshButton.addActionListener(e -> loadLogs());
+        
+        rightPanel.add(refreshButton);
 
-        filtersPanel.add(searchLabel);
-        filtersPanel.add(searchField);
-        filtersPanel.add(Box.createRigidArea(new Dimension(20, 0)));
-        filtersPanel.add(actionLabel);
-        filtersPanel.add(actionFilter);
-        filtersPanel.add(Box.createRigidArea(new Dimension(20, 0)));
-        filtersPanel.add(refreshButton);
+        filtersContainer.add(leftFiltersPanel, BorderLayout.WEST);
+        filtersContainer.add(rightPanel, BorderLayout.EAST);
 
-        headerPanel.add(filtersPanel, BorderLayout.CENTER);
+        headerPanel.add(filtersContainer, BorderLayout.CENTER);
         return headerPanel;
     }
+
+  
 
     private JPanel createTablePanel() {
         JPanel tablePanel = new JPanel(new BorderLayout());

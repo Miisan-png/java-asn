@@ -231,39 +231,55 @@ public class DatabaseHelper {
 
     // --- Item Methods ---
     public List<Item> getAllItems() throws IOException {
-        List<Item> items = new ArrayList<>();
-        File file = new File(ITEMS_FILE);
+    List<Item> items = new ArrayList<>();
+    File file = new File(ITEMS_FILE);
 
-        if (!file.exists()) {
-            writeItemsToFile(items);
-            return items;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            boolean firstLine = true;
-
-            while ((line = reader.readLine()) != null) {
-                if (firstLine) {
-                    firstLine = false;
-                    continue;
-                }
-
-                String[] parts = line.split(",");
-                if (parts.length >= 3) {
-                    String itemCode = parts[0];
-                    String itemName = parts[1];
-                    String supplierId = parts[2];
-
-                    Item item = new Item(itemCode, itemName, supplierId);
-                    items.add(item);
-                } else {
-                    System.err.println("Skipping malformed item line: " + line);
-                }
-            }
-        }
+    if (!file.exists()) {
+        writeItemsToFile(items);
         return items;
     }
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        String line;
+        boolean firstLine = true;
+
+        while ((line = reader.readLine()) != null) {
+            if (firstLine) {
+                firstLine = false;
+                continue;
+            }
+
+            String[] parts = line.split(",");
+            if (parts.length >= 5) { // Updated to expect 5 fields
+                String itemCode = parts[0];
+                String itemName = parts[1];
+                String supplierId = parts[2];
+                
+                try {
+                    int stockQuantity = Integer.parseInt(parts[3]);
+                    double pricePerUnit = Double.parseDouble(parts[4]);
+                    
+                    Item item = new Item(itemCode, itemName, supplierId, stockQuantity, pricePerUnit);
+                    items.add(item);
+                } catch (NumberFormatException e) {
+                    System.err.println("Skipping item with invalid numeric data: " + line);
+                }
+            } else if (parts.length >= 3) {
+                // Backward compatibility for old format
+                String itemCode = parts[0];
+                String itemName = parts[1];
+                String supplierId = parts[2];
+                
+                Item item = new Item(itemCode, itemName, supplierId, 0, 0.0);
+                items.add(item);
+            } else {
+                System.err.println("Skipping malformed item line: " + line);
+            }
+        }
+    }
+    return items;
+}
+
 
     public Item getItemByCode(String itemCode) throws IOException {
         List<Item> items = getAllItems();
@@ -339,24 +355,27 @@ public class DatabaseHelper {
     }
 
     private void writeItemsToFile(List<Item> items) throws IOException {
-        File file = new File(ITEMS_FILE);
-        file.getParentFile().mkdirs();
+    File file = new File(ITEMS_FILE);
+    file.getParentFile().mkdirs();
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write("itemCode,itemName,supplierId");
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+        writer.write("itemCode,itemName,supplierId,stockQuantity,pricePerUnit");
+        writer.newLine();
+
+        for (Item item : items) {
+            writer.write(String.format("%s,%s,%s,%d,%.2f",
+                    item.getItemCode(),
+                    item.getItemName(),
+                    item.getSupplierId(),
+                    item.getStockQuantity(),
+                    item.getPricePerUnit()
+            ));
             writer.newLine();
-
-            for (Item item : items) {
-                writer.write(String.format("%s,%s,%s",
-                        item.getItemCode(),
-                        item.getItemName(),
-                        item.getSupplierId()
-                ));
-                writer.newLine();
-            }
         }
     }
+}
 
+    
     // --- Purchase Requisition Methods ---
     public List<PurchaseRequisition> getAllPurchaseRequisitions() throws IOException {
         List<PurchaseRequisition> requisitions = new ArrayList<>();
