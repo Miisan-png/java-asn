@@ -1,4 +1,4 @@
-// sales/ManageItemsPage.java
+// Complete ManageItemsPage.java with all fixes
 package sales;
 
 import database.DatabaseHelper;
@@ -62,21 +62,20 @@ public class ManageItemsPage extends UIBase {
     }
 
     private void updateTable(List<Item> items) {
-    tableModel.setRowCount(0);
-    for (Item item : items) {
-        if (item != null) {
-            Object[] rowData = {
-                    item.getItemCode(),
-                    item.getItemName(),
-                    item.getSupplierId(),
-                    item.getStockQuantity(), 
-                    String.format("%.2f", item.getPricePerUnit()) 
-            };
-            tableModel.addRow(rowData);
+        tableModel.setRowCount(0);
+        for (Item item : items) {
+            if (item != null) {
+                Object[] rowData = {
+                        item.getItemCode(),
+                        item.getItemName(),
+                        item.getSupplierId(),
+                        item.getStockQuantity(), 
+                        String.format("%.2f", item.getPricePerUnit()) 
+                };
+                tableModel.addRow(rowData);
+            }
         }
     }
-}
-
 
     @Override
     protected void initUI() {
@@ -184,14 +183,16 @@ public class ManageItemsPage extends UIBase {
         bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(bell);
 
-        String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
-                ? currentUser.getUsername()
-                : "User";
-
-        JLabel userLabel = new JLabel(displayName + " ▾");
+         JLabel userLabel = new JLabel("User ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(userLabel);
+
+        SwingUtilities.invokeLater(() -> {
+        if (currentUser != null && currentUser.getUsername() != null) {
+            userLabel.setText(currentUser.getUsername().trim() + " ▾");
+        }
+    });
         userLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -243,21 +244,17 @@ public class ManageItemsPage extends UIBase {
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                // Make only Stock Quantity and Price per unit editable if needed for Sales role
-                // Based on assignment, Sales Manager can Add/Save/Delete/Edit.
-                // We will allow editing for these fields if data is available.
-                // For simplicity, assuming direct edit on table is intended.
+                // Make only Stock Quantity and Price per unit editable
                 return column == 3 || column == 4;
             }
             @Override
             public Class<?> getColumnClass(int column) {
                 if (column == 3 || column == 4) { // Stock Quantity and Price per unit
-                    return Object.class; // Use Object for flexibility with empty strings or numbers
+                    return Object.class;
                 }
                 return String.class;
             }
         };
-
 
         itemsTable = new JTable(tableModel);
         itemsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -270,9 +267,10 @@ public class ManageItemsPage extends UIBase {
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        // FIXED: Use GridLayout to ensure all buttons are visible
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 4, 15, 0)); // 1 row, 4 columns, 15px gap
         buttonsPanel.setBackground(Color.WHITE);
-        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 0, 50)); // Add side margins
 
         JButton addButton = new JButton("Add Item");
         styleButton(addButton);
@@ -294,7 +292,6 @@ public class ManageItemsPage extends UIBase {
         saveButton.addActionListener(e -> handleSaveChanges());
         buttonsPanel.add(saveButton);
 
-
         contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         return contentPanel;
@@ -303,11 +300,11 @@ public class ManageItemsPage extends UIBase {
     private void styleButton(JButton button) {
         button.setBackground(new Color(120, 120, 120));
         button.setForeground(Color.WHITE);
-        button.setFont(new Font("SansSerif", Font.BOLD, 14));
+        button.setFont(new Font("SansSerif", Font.BOLD, 12)); // Slightly smaller font
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15)); // Smaller padding
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(150, 40));
+        button.setPreferredSize(new Dimension(120, 35)); // Smaller button size
     }
 
     private void goBackToDashboard() {
@@ -321,17 +318,17 @@ public class ManageItemsPage extends UIBase {
     private void handleAddItem() {
         JTextField itemNameField = new JTextField();
         JTextField supplierIdField = new JTextField();
-        JTextField stockQuantityField = new JTextField("0"); // New field
-        JTextField pricePerUnitField = new JTextField("0.00"); // New field
+        JTextField stockQuantityField = new JTextField("0");
+        JTextField pricePerUnitField = new JTextField("0.00");
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.add(new JLabel("Item Name:"));
         panel.add(itemNameField);
         panel.add(new JLabel("Supplier ID:"));
         panel.add(supplierIdField);
-        panel.add(new JLabel("Stock Quantity:")); // New field
+        panel.add(new JLabel("Stock Quantity:"));
         panel.add(stockQuantityField);
-        panel.add(new JLabel("Price Per Unit:")); // New field
+        panel.add(new JLabel("Price Per Unit:"));
         panel.add(pricePerUnitField);
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Add New Item", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -382,10 +379,9 @@ public class ManageItemsPage extends UIBase {
                 JOptionPane.showMessageDialog(this, "Error adding item: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-        
     }
 
-            private void handleEditItem() {
+    private void handleEditItem() {
         int selectedRow = itemsTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Please select an item to edit.", "No Selection", JOptionPane.WARNING_MESSAGE);
@@ -404,7 +400,7 @@ public class ManageItemsPage extends UIBase {
         JTextField pricePerUnitField = new JTextField(price);
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
-        panel.add(new JLabel("Item Code: " + itemCode)); // Show Item Code but not editable
+        panel.add(new JLabel("Item Code: " + itemCode));
         panel.add(new JLabel("Item Name:"));
         panel.add(itemNameField);
         panel.add(new JLabel("Supplier ID:"));
@@ -448,8 +444,6 @@ public class ManageItemsPage extends UIBase {
             }
         }
     }
-        
-    
 
     private void handleDeleteItem() {
         int selectedRow = itemsTable.getSelectedRow();
@@ -489,18 +483,85 @@ public class ManageItemsPage extends UIBase {
     }
 
     private void handleSaveChanges() {
-        // This method would typically iterate through the table model
-        // to get any edited data (e.g., Stock Quantity, Price per unit)
-        // and save it back to the database or relevant data file.
-        // Since Stock Quantity and Price per unit are placeholders for now,
-        // this implementation is basic.
-
-        // Example: Assuming the user can edit Stock Quantity (column 3) and Price per unit (column 4)
-        // You would need to fetch the corresponding Item object to update it fully.
-
-        JOptionPane.showMessageDialog(this, "Save Changes functionality to be implemented.", "Information", JOptionPane.INFORMATION_MESSAGE);
-        logSystemAction(SystemLog.ACTION_UPDATE, "Attempted to save item changes");
+        try {
+            DatabaseHelper dbHelper = new DatabaseHelper();
+            boolean hasChanges = false;
+            
+            // Iterate through all rows in the table to check for any edited values
+            for (int row = 0; row < tableModel.getRowCount(); row++) {
+                String itemCode = (String) tableModel.getValueAt(row, 0);
+                String itemName = (String) tableModel.getValueAt(row, 1);
+                String supplierId = (String) tableModel.getValueAt(row, 2);
+                Object stockQtyObj = tableModel.getValueAt(row, 3);
+                Object priceObj = tableModel.getValueAt(row, 4);
+                
+                try {
+                    int stockQuantity = 0;
+                    double pricePerUnit = 0.0;
+                    
+                    // Parse stock quantity
+                    if (stockQtyObj instanceof Integer) {
+                        stockQuantity = (Integer) stockQtyObj;
+                    } else if (stockQtyObj instanceof String) {
+                        stockQuantity = Integer.parseInt((String) stockQtyObj);
+                    }
+                    
+                    // Parse price per unit
+                    if (priceObj instanceof Double) {
+                        pricePerUnit = (Double) priceObj;
+                    } else if (priceObj instanceof String) {
+                        String priceStr = (String) priceObj;
+                        // Remove any formatting (like currency symbols)
+                        priceStr = priceStr.replaceAll("[^0-9.]", "");
+                        pricePerUnit = Double.parseDouble(priceStr);
+                    }
+                    
+                    // Create updated item object
+                    Item updatedItem = new Item(itemCode, itemName, supplierId, stockQuantity, pricePerUnit);
+                    
+                    // Update in database
+                    dbHelper.updateItem(updatedItem);
+                    hasChanges = true;
+                    
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this,
+                        "Invalid number format in row " + (row + 1) + ". Please check stock quantity and price values.",
+                        "Data Format Error",
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+            
+            if (hasChanges) {
+                JOptionPane.showMessageDialog(this, 
+                    "All changes saved successfully!", 
+                    "Save Complete", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                logSystemAction(SystemLog.ACTION_UPDATE, "Saved all item changes");
+                loadItems(); // Refresh the table to show current data
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "No changes detected to save.", 
+                    "No Changes", 
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+            
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this,
+                "Error saving changes: " + ex.getMessage(),
+                "Save Error",
+                JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                "Unexpected error during save: " + ex.getMessage(),
+                "Save Error",
+                JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
     }
+
+    // FIXED: Added the missing logSystemAction method
     private void logSystemAction(String action, String details) {
         try {
             DatabaseHelper db = new DatabaseHelper();

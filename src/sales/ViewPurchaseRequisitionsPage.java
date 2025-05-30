@@ -61,41 +61,50 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         super.setVisible(visible);
     }
 
+
     public void loadRequisitions() {
-        try {
-            DatabaseHelper dbHelper = new DatabaseHelper();
-            requisitionsList = dbHelper.getAllPurchaseRequisitions();
+    try {
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        requisitionsList = dbHelper.getAllPurchaseRequisitions();
 
-            if (requisitionsList == null) {
-                requisitionsList = new ArrayList<>();
-            }
-
-            System.out.println("Loaded " + requisitionsList.size() + " requisitions");
-
-            if (currentUser != null) {
-                System.out.println("Current user: " + currentUser.getUsername() + ", ID: " + currentUser.getUserId() + ", Role: " + currentUser.getRole());
-            } else {
-                System.out.println("Current user is null");
-            }
-
-            filterRequisitions(null);
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        if (requisitionsList == null) {
             requisitionsList = new ArrayList<>();
-            JOptionPane.showMessageDialog(this,
-                    "Error loading requisitions: " + ex.getMessage(),
-                    "Database Error",
-                    JOptionPane.ERROR_MESSAGE);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            requisitionsList = new ArrayList<>();
-            JOptionPane.showMessageDialog(this,
-                    "Unexpected error: " + ex.getMessage(),
-                    "System Error",
-                    JOptionPane.ERROR_MESSAGE);
         }
+
+        System.out.println("Loaded " + requisitionsList.size() + " requisitions");
+
+        if (currentUser != null) {
+            System.out.println("Current user: " + currentUser.getUsername() + ", ID: " + currentUser.getUserId() + ", Role: " + currentUser.getRole());
+        } else {
+            System.out.println("Current user is null");
+        }
+
+        filterRequisitions(null);
+        
+        // Force refresh the UI to update username display
+        SwingUtilities.invokeLater(() -> {
+            repaint();
+            revalidate();
+        });
+
+    } catch (IOException ex) {
+        ex.printStackTrace();
+        requisitionsList = new ArrayList<>();
+        JOptionPane.showMessageDialog(this,
+                "Error loading requisitions: " + ex.getMessage(),
+                "Database Error",
+                JOptionPane.ERROR_MESSAGE);
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        requisitionsList = new ArrayList<>();
+        JOptionPane.showMessageDialog(this,
+                "Unexpected error: " + ex.getMessage(),
+                "System Error",
+                JOptionPane.ERROR_MESSAGE);
     }
+}
+
+    
 
     private void filterRequisitions(String status) {
     if (tableModel == null) {
@@ -291,55 +300,91 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         return sidebar;
     }
 
-    private JPanel createTopBar() {
-        JPanel topContainer = new JPanel(new BorderLayout());
-        topContainer.setBackground(Color.WHITE);
-
-        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        userPanel.setBackground(new Color(180, 180, 180));
-        userPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 20));
-
-        JLabel bell = new JLabel("🔔");
-        bell.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        userPanel.add(bell);
-
-        String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
-                ? currentUser.getUsername()
-                : "User";
-
-        JLabel userLabel = new JLabel(displayName + " ▾");
-        userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-        userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        userPanel.add(userLabel);
-
-        userLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-                dispose();
-                new admin.MyProfilePage(currentUser).setVisible(true);
-            }
-        });
-
-        topContainer.add(userPanel, BorderLayout.NORTH);
-
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        headerPanel.setBackground(Color.WHITE);
-        headerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
-                BorderFactory.createEmptyBorder(15, 20, 15, 20)
-        ));
-
-        JLabel title = new JLabel("View Purchase Requisitions");
-        title.setFont(new Font("Serif", Font.BOLD, 28));
-        title.setForeground(new Color(11, 61, 145));
-
-        headerPanel.add(title);
-
-        topContainer.add(headerPanel, BorderLayout.SOUTH);
-
-        return topContainer;
+    private String getDisplayName() {
+    System.out.println("=== getDisplayName Debug ===");
+    System.out.println("currentUser: " + currentUser);
+    
+    if (currentUser != null) {
+        String username = currentUser.getUsername();
+        System.out.println("Username: '" + username + "'");
+        
+        if (username != null && !username.trim().isEmpty()) {
+            System.out.println("Returning username: " + username.trim());
+            return username.trim();
+        }
+        
+        String userId = currentUser.getUserId();
+        System.out.println("Username empty, trying userId: " + userId);
+        if (userId != null && !userId.trim().isEmpty()) {
+            return userId.trim();
+        }
     }
+    
+    System.out.println("Returning default: User");
+    return "User";
+}
+
+
+
+    
+
+    // Replace your createTopBar method with this:
+
+private JPanel createTopBar() {
+    JPanel topContainer = new JPanel(new BorderLayout());
+    topContainer.setBackground(Color.WHITE);
+
+    JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+    userPanel.setBackground(new Color(180, 180, 180));
+    userPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 20));
+
+    JLabel bell = new JLabel("🔔");
+    bell.setFont(new Font("SansSerif", Font.PLAIN, 16));
+    bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    userPanel.add(bell);
+
+    // Create the user label but set text later
+    JLabel userLabel = new JLabel("User ▾");
+    userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+    userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    userPanel.add(userLabel);
+
+    // Update the username after a short delay to ensure currentUser is set
+    SwingUtilities.invokeLater(() -> {
+        if (currentUser != null && currentUser.getUsername() != null) {
+            userLabel.setText(currentUser.getUsername().trim() + " ▾");
+        }
+    });
+
+    userLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+        @Override
+        public void mouseClicked(java.awt.event.MouseEvent e) {
+            dispose();
+            new admin.MyProfilePage(currentUser).setVisible(true);
+        }
+    });
+
+    topContainer.add(userPanel, BorderLayout.NORTH);
+
+    JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    headerPanel.setBackground(Color.WHITE);
+    headerPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
+            BorderFactory.createEmptyBorder(15, 20, 15, 20)
+    ));
+
+    JLabel title = new JLabel("View Purchase Requisitions");
+    title.setFont(new Font("Serif", Font.BOLD, 28));
+    title.setForeground(new Color(11, 61, 145));
+
+    headerPanel.add(title);
+
+    topContainer.add(headerPanel, BorderLayout.SOUTH);
+
+    return topContainer;
+}
+
+    
 
     private JPanel createMenuItem(String text, boolean isSelected) {
         JPanel menuItem = new JPanel(new BorderLayout());
@@ -629,6 +674,34 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
                 JOptionPane.ERROR_MESSAGE);
     }
 }
+
+private void updateUserDisplay() {
+    if (currentUser != null) {
+        // Find the user label and update it
+        Container parent = getContentPane();
+        updateUserLabelRecursive(parent);
+        repaint();
+    }
+}
+
+private void updateUserLabelRecursive(Container container) {
+    for (Component comp : container.getComponents()) {
+        if (comp instanceof JLabel) {
+            JLabel label = (JLabel) comp;
+            String text = label.getText();
+            if (text != null && text.contains("▾")) {
+                // This is likely the user label
+                String newDisplayName = getDisplayName();
+                label.setText(newDisplayName + " ▾");
+                System.out.println("Updated user label to: " + newDisplayName);
+            }
+        } else if (comp instanceof Container) {
+            updateUserLabelRecursive((Container) comp);
+        }
+    }
+}
+
+
 
 // FIXED: Added Delete Requisition functionality
 private void handleDeleteRequisition() {

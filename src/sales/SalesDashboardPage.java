@@ -46,6 +46,7 @@ public class SalesDashboardPage extends UIBase {
         root.add(content, BorderLayout.CENTER);
 
         setContentPane(root);
+        
     }
 
     private JPanel createSidebar() {
@@ -144,14 +145,16 @@ public class SalesDashboardPage extends UIBase {
         bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(bell);
 
-        String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
-                ? currentUser.getUsername()
-                : "S";
-
-        JLabel userLabel = new JLabel(displayName + " ▾");
+        JLabel userLabel = new JLabel("User ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(userLabel);
+
+        SwingUtilities.invokeLater(() -> {
+        if (currentUser != null && currentUser.getUsername() != null) {
+            userLabel.setText(currentUser.getUsername().trim() + " ▾");
+        }
+    });
 
         topContainer.add(userPanel, BorderLayout.NORTH);
 
@@ -353,7 +356,6 @@ public class SalesDashboardPage extends UIBase {
     private void navigateToMyProfile() {
         dispose();
         SwingUtilities.invokeLater(() -> {
-            // Assuming MyProfilePage is in the admin package as per your file structure
             MyProfilePage profilePage = new MyProfilePage(currentUser);
             profilePage.setVisible(true);
         });
