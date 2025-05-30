@@ -62,24 +62,21 @@ public class ManageItemsPage extends UIBase {
     }
 
     private void updateTable(List<Item> items) {
-        tableModel.setRowCount(0);
-        for (Item item : items) {
-            if (item != null) {
-                // Note: Stock Quantity and Price per unit are not in the Item model
-                // and are not available in the provided data files.
-                // Assuming these columns might be populated from other sources or are placeholders for this assignment.
-                // For now, they are left blank.
-                Object[] rowData = {
-                        item.getItemCode(),
-                        item.getItemName(),
-                        item.getSupplierId(),
-                        "", // Stock Quantity (Placeholder)
-                        ""  // Price per unit (Placeholder)
-                };
-                tableModel.addRow(rowData);
-            }
+    tableModel.setRowCount(0);
+    for (Item item : items) {
+        if (item != null) {
+            Object[] rowData = {
+                    item.getItemCode(),
+                    item.getItemName(),
+                    item.getSupplierId(),
+                    item.getStockQuantity(), 
+                    String.format("%.2f", item.getPricePerUnit()) 
+            };
+            tableModel.addRow(rowData);
         }
     }
+}
+
 
     @Override
     protected void initUI() {
@@ -322,22 +319,27 @@ public class ManageItemsPage extends UIBase {
     }
 
     private void handleAddItem() {
-        // For sales role, adding might be a simpler form or integrated differently.
-        // Based on the admin AddItemPage, a separate page is used.
-        // Implementing a simple input dialog for now, a dedicated page class would be better.
         JTextField itemNameField = new JTextField();
         JTextField supplierIdField = new JTextField();
+        JTextField stockQuantityField = new JTextField("0"); // New field
+        JTextField pricePerUnitField = new JTextField("0.00"); // New field
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.add(new JLabel("Item Name:"));
         panel.add(itemNameField);
         panel.add(new JLabel("Supplier ID:"));
         panel.add(supplierIdField);
+        panel.add(new JLabel("Stock Quantity:")); // New field
+        panel.add(stockQuantityField);
+        panel.add(new JLabel("Price Per Unit:")); // New field
+        panel.add(pricePerUnitField);
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Add New Item", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             String itemName = itemNameField.getText().trim();
             String supplierId = supplierIdField.getText().trim();
+            String stockQtyStr = stockQuantityField.getText().trim();
+            String priceStr = pricePerUnitField.getText().trim();
 
             if (itemName.isEmpty() || supplierId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Item Name and Supplier ID cannot be empty.", "Input Error", JOptionPane.ERROR_MESSAGE);
@@ -345,8 +347,16 @@ public class ManageItemsPage extends UIBase {
             }
 
             try {
+                int stockQuantity = Integer.parseInt(stockQtyStr);
+                double pricePerUnit = Double.parseDouble(priceStr);
+                
+                if (stockQuantity < 0 || pricePerUnit < 0) {
+                    JOptionPane.showMessageDialog(this, "Stock quantity and price must be non-negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 DatabaseHelper dbHelper = new DatabaseHelper();
-                                List<Item> allItems = dbHelper.getAllItems();
+                List<Item> allItems = dbHelper.getAllItems();
                 boolean duplicateExists = allItems.stream().anyMatch(item ->
                         item.getItemName().equalsIgnoreCase(itemName) &&
                         item.getSupplierId().equalsIgnoreCase(supplierId));
@@ -359,20 +369,23 @@ public class ManageItemsPage extends UIBase {
                     return;
                 }
 
-                String newItemCode = "ITEM" + (allItems.size() + 1);
-                Item newItem = new Item(newItemCode, itemName, supplierId);
+                String newItemCode = "ITEM" + String.format("%03d", allItems.size() + 1);
+                Item newItem = new Item(newItemCode, itemName, supplierId, stockQuantity, pricePerUnit);
                 dbHelper.addItem(newItem);
 
                 JOptionPane.showMessageDialog(this, "Item added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 logSystemAction(SystemLog.ACTION_CREATE, "Added new item: " + newItemCode);
                 loadItems(); // Refresh the table
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter valid numbers for stock quantity and price.", "Input Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException | IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(this, "Error adding item: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+        
     }
 
-    private void handleEditItem() {
+            private void handleEditItem() {
         int selectedRow = itemsTable.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Please select an item to edit.", "No Selection", JOptionPane.WARNING_MESSAGE);
@@ -382,11 +395,13 @@ public class ManageItemsPage extends UIBase {
         String itemCode = (String) tableModel.getValueAt(selectedRow, 0);
         String itemName = (String) tableModel.getValueAt(selectedRow, 1);
         String supplierId = (String) tableModel.getValueAt(selectedRow, 2);
-        // You might also get Stock Quantity and Price per unit if available
+        String stockQty = String.valueOf(tableModel.getValueAt(selectedRow, 3));
+        String price = String.valueOf(tableModel.getValueAt(selectedRow, 4));
 
         JTextField itemNameField = new JTextField(itemName);
         JTextField supplierIdField = new JTextField(supplierId);
-        // Add fields for Stock Quantity and Price per unit if applicable
+        JTextField stockQuantityField = new JTextField(stockQty);
+        JTextField pricePerUnitField = new JTextField(price);
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.add(new JLabel("Item Code: " + itemCode)); // Show Item Code but not editable
@@ -394,13 +409,17 @@ public class ManageItemsPage extends UIBase {
         panel.add(itemNameField);
         panel.add(new JLabel("Supplier ID:"));
         panel.add(supplierIdField);
-        // Add labels and fields for Stock Quantity and Price per unit
+        panel.add(new JLabel("Stock Quantity:"));
+        panel.add(stockQuantityField);
+        panel.add(new JLabel("Price Per Unit:"));
+        panel.add(pricePerUnitField);
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Edit Item", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             String newItemName = itemNameField.getText().trim();
             String newSupplierId = supplierIdField.getText().trim();
-            // Get updated Stock Quantity and Price per unit
+            String newStockQtyStr = stockQuantityField.getText().trim();
+            String newPriceStr = pricePerUnitField.getText().trim();
 
             if (newItemName.isEmpty() || newSupplierId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Item Name and Supplier ID cannot be empty.", "Input Error", JOptionPane.ERROR_MESSAGE);
@@ -408,18 +427,29 @@ public class ManageItemsPage extends UIBase {
             }
 
             try {
+                int newStockQuantity = Integer.parseInt(newStockQtyStr);
+                double newPricePerUnit = Double.parseDouble(newPriceStr);
+                
+                if (newStockQuantity < 0 || newPricePerUnit < 0) {
+                    JOptionPane.showMessageDialog(this, "Stock quantity and price must be non-negative.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 DatabaseHelper dbHelper = new DatabaseHelper();
-                Item updatedItem = new Item(itemCode, newItemName, newSupplierId);
-                // Set Stock Quantity and Price per unit on the updatedItem object if applicable
+                Item updatedItem = new Item(itemCode, newItemName, newSupplierId, newStockQuantity, newPricePerUnit);
                 dbHelper.updateItem(updatedItem);
                 JOptionPane.showMessageDialog(this, "Item updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 logSystemAction(SystemLog.ACTION_UPDATE, "Updated item: " + itemCode);
                 loadItems(); // Refresh the table
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter valid numbers for stock quantity and price.", "Input Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException | IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(this, "Error updating item: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
+        
+    
 
     private void handleDeleteItem() {
         int selectedRow = itemsTable.getSelectedRow();

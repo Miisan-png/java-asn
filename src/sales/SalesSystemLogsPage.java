@@ -187,7 +187,7 @@ public class SalesSystemLogsPage extends UIBase {
 
         String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
                 ? currentUser.getUsername()
-                : "User";
+                : "S";
 
         JLabel userLabel = new JLabel(displayName + " ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
