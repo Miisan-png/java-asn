@@ -264,7 +264,7 @@ public class ManageSuppliersPage extends UIBase {
         buttonsPanel.setBackground(Color.WHITE);
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
-        JButton filterBtn = new JButton("Filter by: All Status ▼");
+        JButton filterBtn = new JButton("Filter ▼:");
         styleButton(filterBtn);
         createFilterPopup(filterBtn);
         buttonsPanel.add(filterBtn);

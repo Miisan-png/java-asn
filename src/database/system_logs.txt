@@ -55,3 +55,5 @@ LOG1747941067870,U002,s,Delete,Deleted supplier: Office Solutions Inc,2025-05-23
 LOG1747941445607,U002,s,Delete,Deleted sales entry for item: ITEM002,2025-05-23 03:17:25,SAL
 LOG1747941449253,U002,s,Update,Attempted to save sales entries,2025-05-23 03:17:29,SAL
 LOG1747941507288,U002,s,Update,Attempted to save sales entries,2025-05-23 03:18:27,SAL
+LOG1748603642300,U002,s,Create,Added new item: ITEM021,2025-05-30 18:14:02,SAL
+LOG1748604216745,U002,s,Delete,Deleted purchase requisition: REQ003,2025-05-30 18:23:36,SAL
