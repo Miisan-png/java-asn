@@ -1,8 +1,6 @@
-
 package purchase;
 
 import admin.UIBase;
-
 import database.DatabaseHelper;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -52,7 +50,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
     }
 
     private void initTableModel() {
-        String[] columnNames = {"PR ID", "Item Code", "Item Name", "Quantity", "Required Date", "Status"};
+        String[] columnNames = {"PR ID", "Item Code", "Item Name", "Quantity", "Required Date", "Sales Manager", "Supplier", "Status"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -60,7 +58,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
             }
             @Override
             public Class<?> getColumnClass(int column) {
-                if (column == 3) {
+                if (column == 3) { // Quantity column
                     return Integer.class;
                 }
                 return String.class;
@@ -123,12 +121,12 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
             return;
         }
 
-        System.out.println("Loading all requisitions (ignoring filter) - list size: " + requisitionsList.size());
+        System.out.println("Loading all requisitions - list size: " + requisitionsList.size());
 
-        
         for (PurchaseRequisition requisition : requisitionsList) {
             if (requisition != null) {
                 try {
+                    // Get item name
                     String itemName = requisition.getItemName();
                     if (itemName == null || itemName.isEmpty()) {
                         try {
@@ -137,21 +135,49 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
                             if (item != null) {
                                 itemName = item.getItemName();
                             } else {
-                                itemName = ""; 
+                                itemName = "Unknown Item"; 
                             }
                         } catch (Exception e) {
-                            itemName = ""; 
+                            itemName = "Unknown Item"; 
                         }
                     }
 
-                    
+                    // Get sales manager username
+                    String salesManagerName = requisition.getSalesManagerId();
+                    try {
+                        DatabaseHelper db = new DatabaseHelper();
+                        models.User salesManager = db.getUserById(requisition.getSalesManagerId());
+                        if (salesManager != null) {
+                            salesManagerName = salesManager.getUsername();
+                        }
+                    } catch (Exception e) {
+                        // Keep the ID if we can't get the name
+                    }
+
+                    // Get supplier information
+                    String supplierInfo = "N/A";
+                    try {
+                        DatabaseHelper db = new DatabaseHelper();
+                        models.Item item = db.getItemByCode(requisition.getItemCode());
+                        if (item != null && item.getSupplierId() != null) {
+                            models.Supplier supplier = db.getSupplierById(item.getSupplierId());
+                            if (supplier != null) {
+                                supplierInfo = supplier.getSupplierName();
+                            } else {
+                                supplierInfo = item.getSupplierId(); // Show supplier ID if name not found
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Error fetching supplier info for requisition " + requisition.getRequisitionId() + ": " + e.getMessage());
+                    }
+
+                    // Format date
                     String dateStr = "";
                     LocalDate requiredDate = requisition.getRequiredDate();
                     if (requiredDate != null) {
                         try {
                             dateStr = requiredDate.format(displayDateFormatter);
                         } catch (Exception e) {
-                            
                             dateStr = requiredDate.toString();
                         }
                     }
@@ -162,11 +188,13 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
                             itemName,
                             requisition.getQuantity(),
                             dateStr,
+                            salesManagerName,
+                            supplierInfo,
                             requisition.getStatus()
                     };
                     tableModel.addRow(rowData);
 
-                    System.out.println("Added requisition: " + requisition.getRequisitionId());
+                    System.out.println("Added requisition: " + requisition.getRequisitionId() + " with supplier: " + supplierInfo);
                 } catch (Exception e) {
                     System.out.println("Error adding row for requisition: " +
                             (requisition.getRequisitionId() != null ? requisition.getRequisitionId() : "unknown") +
@@ -178,7 +206,6 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
 
         System.out.println("Table now has " + tableModel.getRowCount() + " rows");
 
-        
         if (requisitionsTable != null) {
             requisitionsTable.revalidate();
             requisitionsTable.repaint();
@@ -289,16 +316,16 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(bell);
 
-           JLabel userLabel = new JLabel("User ▾");
+        JLabel userLabel = new JLabel("User ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(userLabel);
 
         SwingUtilities.invokeLater(() -> {
-        if (currentUser != null && currentUser.getUsername() != null) {
-            userLabel.setText(currentUser.getUsername().trim() + " ▾");
-        }
-    });
+            if (currentUser != null && currentUser.getUsername() != null) {
+                userLabel.setText(currentUser.getUsername().trim() + " ▾");
+            }
+        });
 
         userLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -347,12 +374,10 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        
         if (tableModel == null) {
             initTableModel();
         }
 
-        
         requisitionsTable = new JTable(tableModel);
         requisitionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         requisitionsTable.getTableHeader().setBackground(new Color(240, 240, 240));
@@ -360,15 +385,17 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         requisitionsTable.setRowHeight(30);
         requisitionsTable.setGridColor(Color.LIGHT_GRAY);
 
-        
-        requisitionsTable.getColumnModel().getColumn(0).setPreferredWidth(80);  
-        requisitionsTable.getColumnModel().getColumn(1).setPreferredWidth(80);  
-        requisitionsTable.getColumnModel().getColumn(2).setPreferredWidth(150); 
-        requisitionsTable.getColumnModel().getColumn(3).setPreferredWidth(80);  
-        requisitionsTable.getColumnModel().getColumn(4).setPreferredWidth(120); 
-        requisitionsTable.getColumnModel().getColumn(5).setPreferredWidth(80);  
+        // Set column widths
+        requisitionsTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // PR ID
+        requisitionsTable.getColumnModel().getColumn(1).setPreferredWidth(90);  // Item Code
+        requisitionsTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Item Name
+        requisitionsTable.getColumnModel().getColumn(3).setPreferredWidth(80);  // Quantity
+        requisitionsTable.getColumnModel().getColumn(4).setPreferredWidth(120); // Required Date
+        requisitionsTable.getColumnModel().getColumn(5).setPreferredWidth(120); // Sales Manager
+        requisitionsTable.getColumnModel().getColumn(6).setPreferredWidth(120); // Supplier
+        requisitionsTable.getColumnModel().getColumn(7).setPreferredWidth(90);  // Status
 
-        
+        // Custom cell renderer for status column
         requisitionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -376,18 +403,21 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
 
                 if (!isSelected) {
                     try {
-                        if (column == 5) { 
+                        if (column == 7) { // Status column (now at index 7)
                             String status = value != null ? value.toString() : "";
                             if ("Approved".equals(status)) {
-                                c.setBackground(new Color(230, 255, 230)); 
-                                c.setForeground(new Color(0, 100, 0));     
+                                c.setBackground(new Color(230, 255, 230)); // Light green
+                                c.setForeground(new Color(0, 100, 0));     // Dark green
                             } else if ("Rejected".equals(status)) {
-                                c.setBackground(new Color(255, 230, 230)); 
-                                c.setForeground(new Color(180, 0, 0));     
-                            } else { 
-                                c.setBackground(new Color(255, 255, 230)); 
-                                c.setForeground(new Color(180, 100, 0));   
+                                c.setBackground(new Color(255, 230, 230)); // Light red
+                                c.setForeground(new Color(180, 0, 0));     // Dark red
+                            } else { // Pending
+                                c.setBackground(new Color(255, 255, 230)); // Light yellow
+                                c.setForeground(new Color(180, 100, 0));   // Dark orange
                             }
+                        } else if (column == 6) { // Supplier column
+                            c.setBackground(new Color(240, 248, 255)); // Light blue background for supplier
+                            c.setForeground(new Color(25, 25, 112));   // Navy blue text
                         } else {
                             c.setBackground(Color.WHITE);
                             c.setForeground(Color.BLACK);
@@ -401,17 +431,242 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
             }
         });
 
-        
         JScrollPane scrollPane = new JScrollPane(requisitionsTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        scrollPane.setPreferredSize(new Dimension(600, 400)); 
+        scrollPane.setPreferredSize(new Dimension(700, 400));
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        
+        // Create buttons panel with approval functionality
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        buttonsPanel.setBackground(Color.WHITE);
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+
+        // Approve button
+        JButton approveButton = new JButton("Approve PR");
+        approveButton.setBackground(new Color(40, 167, 69)); // Success green
+        approveButton.setForeground(Color.WHITE);
+        approveButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        approveButton.setFocusPainted(false);
+        approveButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        approveButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        approveButton.setPreferredSize(new Dimension(150, 40));
+        approveButton.addActionListener(e -> handleApproveRequisition());
+        buttonsPanel.add(approveButton);
+
+        // Reject button
+        JButton rejectButton = new JButton("Reject PR");
+        rejectButton.setBackground(new Color(220, 53, 69)); // Danger red
+        rejectButton.setForeground(Color.WHITE);
+        rejectButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        rejectButton.setFocusPainted(false);
+        rejectButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        rejectButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        rejectButton.setPreferredSize(new Dimension(150, 40));
+        rejectButton.addActionListener(e -> handleRejectRequisition());
+        buttonsPanel.add(rejectButton);
+
+        // View Details button
+        JButton viewButton = new JButton("View Details");
+        styleButton(viewButton);
+        viewButton.addActionListener(e -> handleViewDetails());
+        buttonsPanel.add(viewButton);
+
+        // Refresh button
+        JButton refreshButton = new JButton("Refresh");
+        styleButton(refreshButton);
+        refreshButton.addActionListener(e -> loadRequisitions());
+        buttonsPanel.add(refreshButton);
+
+        contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         return contentPanel;
     }
 
+    private void handleApproveRequisition() {
+        int selectedRow = requisitionsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a requisition to approve.",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            String requisitionId = (String) requisitionsTable.getValueAt(selectedRow, 0);
+            String itemName = (String) requisitionsTable.getValueAt(selectedRow, 2);
+            String currentStatus = (String) requisitionsTable.getValueAt(selectedRow, 7); // Status is now at column 7
+
+            // Check if already processed
+            if (!"Pending".equals(currentStatus)) {
+                JOptionPane.showMessageDialog(this,
+                        "This requisition has already been " + currentStatus.toLowerCase() + ".",
+                        "Cannot Approve",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Confirmation dialog
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to APPROVE this requisition?\n\n" +
+                    "Requisition ID: " + requisitionId + "\n" +
+                    "Item: " + itemName + "\n\n" +
+                    "This will allow the requisition to proceed to purchase order creation.",
+                    "Confirm Approval",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                updateRequisitionStatus(requisitionId, PurchaseRequisition.STATUS_APPROVED);
+                
+                // Update the table row directly for immediate feedback
+                requisitionsTable.setValueAt("Approved", selectedRow, 7);
+                requisitionsTable.repaint();
+                
+                JOptionPane.showMessageDialog(this,
+                        "Requisition approved successfully!",
+                        "Approval Complete",
+                        JOptionPane.INFORMATION_MESSAGE);
+                logSystemAction(SystemLog.ACTION_UPDATE, "Approved purchase requisition: " + requisitionId);
+                
+                // Refresh the entire table to ensure data consistency
+                loadRequisitions();
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Error approving requisition: " + ex.getMessage(),
+                    "Approval Error",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleRejectRequisition() {
+        int selectedRow = requisitionsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a requisition to reject.",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            String requisitionId = (String) requisitionsTable.getValueAt(selectedRow, 0);
+            String itemName = (String) requisitionsTable.getValueAt(selectedRow, 2);
+            String currentStatus = (String) requisitionsTable.getValueAt(selectedRow, 7); // Status is now at column 7
+
+            // Check if already processed
+            if (!"Pending".equals(currentStatus)) {
+                JOptionPane.showMessageDialog(this,
+                        "This requisition has already been " + currentStatus.toLowerCase() + ".",
+                        "Cannot Reject",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Ask for rejection reason
+            String reason = JOptionPane.showInputDialog(this,
+                    "Please provide a reason for rejecting this requisition:\n\n" +
+                    "Requisition ID: " + requisitionId + "\n" +
+                    "Item: " + itemName,
+                    "Rejection Reason",
+                    JOptionPane.QUESTION_MESSAGE);
+
+            if (reason != null && !reason.trim().isEmpty()) {
+                updateRequisitionStatus(requisitionId, PurchaseRequisition.STATUS_REJECTED);
+                
+                // Update the table row directly for immediate feedback
+                requisitionsTable.setValueAt("Rejected", selectedRow, 7);
+                requisitionsTable.repaint();
+                
+                JOptionPane.showMessageDialog(this,
+                        "Requisition rejected successfully!\n\nReason: " + reason,
+                        "Rejection Complete",
+                        JOptionPane.INFORMATION_MESSAGE);
+                logSystemAction(SystemLog.ACTION_UPDATE, "Rejected purchase requisition: " + requisitionId + " - Reason: " + reason);
+                
+                // Refresh the entire table to ensure data consistency
+                loadRequisitions();
+            } else if (reason != null) {
+                JOptionPane.showMessageDialog(this,
+                        "Rejection reason cannot be empty.",
+                        "Invalid Input",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Error rejecting requisition: " + ex.getMessage(),
+                    "Rejection Error",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleViewDetails() {
+        int selectedRow = requisitionsTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a requisition to view details.",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            String requisitionId = (String) requisitionsTable.getValueAt(selectedRow, 0);
+            String itemCode = (String) requisitionsTable.getValueAt(selectedRow, 1);
+            String itemName = (String) requisitionsTable.getValueAt(selectedRow, 2);
+            int quantity = (Integer) requisitionsTable.getValueAt(selectedRow, 3);
+            String requiredDate = (String) requisitionsTable.getValueAt(selectedRow, 4);
+            String salesManager = (String) requisitionsTable.getValueAt(selectedRow, 5);
+            String supplier = (String) requisitionsTable.getValueAt(selectedRow, 6);
+            String status = (String) requisitionsTable.getValueAt(selectedRow, 7); // Status is now at column 7
+
+            // Get additional details from database
+            DatabaseHelper dbHelper = new DatabaseHelper();
+            PurchaseRequisition pr = dbHelper.getPurchaseRequisitionById(requisitionId);
+            
+            String details = String.format(
+                    "Purchase Requisition Details\n\n" +
+                    "Requisition ID: %s\n" +
+                    "Item Code: %s\n" +
+                    "Item Name: %s\n" +
+                    "Quantity Required: %d\n" +
+                    "Required Date: %s\n" +
+                    "Requested by: %s\n" +
+                    "Supplier: %s\n" +
+                    "Current Status: %s",
+                    requisitionId, itemCode, itemName, quantity, 
+                    requiredDate, salesManager, supplier, status
+            );
+
+            JOptionPane.showMessageDialog(this,
+                    details,
+                    "Requisition Details",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Error loading requisition details: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void updateRequisitionStatus(String requisitionId, String newStatus) throws IOException {
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        PurchaseRequisition requisition = dbHelper.getPurchaseRequisitionById(requisitionId);
+        
+        if (requisition != null) {
+            requisition.setStatus(newStatus);
+            dbHelper.updatePurchaseRequisition(requisition);
+        } else {
+            throw new IOException("Requisition not found: " + requisitionId);
+        }
+    }
 
     private void styleButton(JButton button) {
         button.setBackground(new Color(120, 120, 120));
@@ -420,7 +675,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(180, 40));
+        button.setPreferredSize(new Dimension(150, 40));
     }
 
     private void goBackToDashboard() {

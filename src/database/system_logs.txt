@@ -91,3 +91,10 @@ LOG1748637453110,ADMN001,a,Delete,Deleted user: h,2025-05-31 04:37:33,ADMN
 LOG1748637913215,U003,p,Update,Changed status of PO002 to Completed,2025-05-31 04:45:13,PUR
 LOG1748637915961,U003,p,Update,Changed status of PO003 to Completed,2025-05-31 04:45:15,PUR
 LOG1748637960055,U005,f,ViewlogS,Opened FinanceGenerateReportsPage,2025-05-31 04:46:00,FIN
+LOG1748638638028,U002,s,Create,Created purchase requisition: REQ1748638636178,2025-05-31 04:57:18,SAL
+LOG1748638746621,U003,p,Update,Changed status of PO001 to Completed,2025-05-31 04:59:06,PUR
+LOG1748639021339,U003,p,Update,Approved purchase requisition: REQ1748638636178,2025-05-31 05:03:41,PUR
+LOG1748639107171,U003,p,Update,Approved purchase requisition: REQ010,2025-05-31 05:05:07,PUR
+LOG1748639196422,U003,p,Update,Rejected purchase requisition: REQ007 - Reason: idk,2025-05-31 05:06:36,PUR
+LOG1748639204956,U003,p,Update,Approved purchase requisition: REQ001,2025-05-31 05:06:44,PUR
+LOG1748639264313,U003,p,Update,Approved purchase requisition: REQ006,2025-05-31 05:07:44,PUR
