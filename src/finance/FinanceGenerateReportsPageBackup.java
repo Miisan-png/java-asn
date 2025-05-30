@@ -12,7 +12,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 import java.awt.event.*;
-import java.awt.Desktop;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.File;
@@ -106,9 +105,16 @@ public class FinanceGenerateReportsPageBackup extends UIBase {
         JLabel bell = new JLabel("🔔");
         userPanel.add(bell);
 
-        JLabel userLabel = new JLabel("User");
+           JLabel userLabel = new JLabel("User ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(userLabel);
+
+        SwingUtilities.invokeLater(() -> {
+        if (currentUser != null && currentUser.getUsername() != null) {
+            userLabel.setText(currentUser.getUsername().trim() + " ▾");
+        }
+    });
             
         
 

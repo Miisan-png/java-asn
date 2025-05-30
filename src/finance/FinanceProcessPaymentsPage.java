@@ -12,7 +12,6 @@ import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Cursor;
 import java.time.LocalDateTime;
 
 public class FinanceProcessPaymentsPage extends UIBase {
@@ -54,6 +53,8 @@ public class FinanceProcessPaymentsPage extends UIBase {
         logo.setForeground(primaryColor);
         logoPanel.add(logo, BorderLayout.CENTER);
         sidebar.add(logoPanel, BorderLayout.NORTH);
+
+        
 
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
@@ -105,9 +106,17 @@ public class FinanceProcessPaymentsPage extends UIBase {
         JLabel bell = new JLabel("\uD83D\uDD14");
         userPanel.add(bell);
 
-         JLabel userLabel = new JLabel("User");
+       JLabel userLabel = new JLabel("User ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(userLabel);
+
+        SwingUtilities.invokeLater(() -> {
+        if (currentUser != null && currentUser.getUsername() != null) {
+            userLabel.setText(currentUser.getUsername().trim() + " ▾");
+        }
+    });
+
 
         top.add(userPanel, BorderLayout.NORTH);
 

@@ -133,14 +133,17 @@ public class FinancePurchaseOrdersPage extends UIBase {
         bell.setFont(new Font("SansSerif", Font.PLAIN, 16));
         userPanel.add(bell);
 
-        String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
-                ? currentUser.getUsername()
-                : "User";
-
-        JLabel userLabel = new JLabel(displayName + " ▾");
+            JLabel userLabel = new JLabel("User ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(userLabel);
+
+        SwingUtilities.invokeLater(() -> {
+        if (currentUser != null && currentUser.getUsername() != null) {
+            userLabel.setText(currentUser.getUsername().trim() + " ▾");
+        }
+    });
+
         userLabel.addMouseListener(new MouseAdapter() {
     @Override
     public void mouseClicked(MouseEvent e) {

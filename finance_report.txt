@@ -3,7 +3,7 @@ APPROVED PURCHASE ORDERS:
 Order ID: PO002
 Requisition ID: REQ005
 Item Code: ITEM015
-Item Name: Apple MacBook
+Item Name: Orange Juice 1L
 Quantity: 4
 Unit Price: RM 1500.00
 Total Amount: RM 6000.00
@@ -14,10 +14,10 @@ Status: Approved
 Order ID: PO005
 Requisition ID: REQ003
 Item Code: ITEM010
-Item Name: Xerox Machine
-Quantity: 15
-Unit Price: RM 50.75
-Total Amount: RM 761.25
+Item Name: Greek Yogurt 500g
+Quantity: 20
+Unit Price: RM 50.00
+Total Amount: RM 1000.00
 Order Date: 2025-05-19
 Supplier ID: SUP002
 Status: Approved
@@ -25,7 +25,7 @@ Status: Approved
 Order ID: PO006
 Requisition ID: REQ006
 Item Code: ITEM008
-Item Name: Conference Table
+Item Name: Tomatoes 1kg
 Quantity: 13
 Unit Price: RM 85.00
 Total Amount: RM 1105.00
@@ -40,36 +40,14 @@ PAID PURCHASE ORDERS:
 OUTSTANDING PAYMENTS:
 --------------------------------------------------
 Order ID: PO001
-Requisition ID: REQ002
-Item Code: ITEM005
-Item Name: Whiteboard
+Requisition ID: RQ
+Item Code: IT
+Item Name: 
 Quantity: 7
 Unit Price: RM 120.50
 Total Amount: RM 843.50
 Order Date: 2025-05-15
-Supplier ID: SUP003
-Status: Pending
---------------------------------------------------
-Order ID: PO003
-Requisition ID: REQ008
-Item Code: ITEM012
-Item Name: Water Dispenser
-Quantity: 8
-Unit Price: RM 75.25
-Total Amount: RM 602.00
-Order Date: 2025-05-17
-Supplier ID: SUP004
-Status: Pending
---------------------------------------------------
-Order ID: PO004
-Requisition ID: REQ001
-Item Code: ITEM001
-Item Name: 
-Quantity: 9
-Unit Price: RM 35.00
-Total Amount: RM 315.00
-Order Date: 2025-05-18
-Supplier ID: SUP001
+Supplier ID: SUP
 Status: Pending
 --------------------------------------------------
 
@@ -77,5 +55,5 @@ SUMMARY:
 --------------------------------------------------
 Approved POs: 3
 Paid POs: 0
-Outstanding Payments: RM 1760.50
-Total Expenditure: RM 7866.25
+Outstanding Payments: RM 843.50
+Total Expenditure: RM 8105.00

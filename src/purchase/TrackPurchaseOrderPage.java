@@ -129,14 +129,16 @@ public class TrackPurchaseOrderPage extends UIBase {
         bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(bell);
 
-        String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
-                ? currentUser.getUsername()
-                : "User";
-
-        JLabel userLabel = new JLabel(displayName + " ▾");
+           JLabel userLabel = new JLabel("User ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(userLabel);
+
+        SwingUtilities.invokeLater(() -> {
+        if (currentUser != null && currentUser.getUsername() != null) {
+            userLabel.setText(currentUser.getUsername().trim() + " ▾");
+        }
+    });
         userLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
