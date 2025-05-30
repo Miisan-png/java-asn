@@ -52,6 +52,7 @@ public class ManualStockAdjustmentPage extends admin.UIBase {
         JLabel logo = new JLabel("Inventory", SwingConstants.CENTER);
         logo.setFont(new Font("Serif", Font.BOLD, 16));
         logo.setForeground(primaryColor);
+        logo.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         logoPanel.add(logo, BorderLayout.CENTER);
         sidebar.add(logoPanel, BorderLayout.NORTH);
 
@@ -71,12 +72,75 @@ public class ManualStockAdjustmentPage extends admin.UIBase {
         menuPanel.add(Box.createVerticalGlue());
         sidebar.add(menuPanel, BorderLayout.CENTER);
 
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        logoutPanel.setBackground(Color.WHITE);
+        logoutPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
+
+        JButton logoutBtn = new JButton("Logout");
+        logoutBtn.setBackground(new Color(120, 120, 120));
+        logoutBtn.setForeground(Color.WHITE);
+        logoutBtn.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        logoutBtn.setPreferredSize(new Dimension(120, 35));
+        logoutBtn.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(new Color(120, 120, 120), 1),
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        logoutBtn.setFocusPainted(false);
+        logoutBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        logoutBtn.addActionListener(e -> {
+            int response = JOptionPane.showConfirmDialog(
+                    ManualStockAdjustmentPage.this,
+                    "Are you sure you want to log out?",
+                    "Logout Confirmation",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+            if (response == JOptionPane.YES_OPTION) {
+                dispose();
+                System.exit(0);
+            }
+        });
+
+        logoutPanel.add(logoutBtn);
+        sidebar.add(logoutPanel, BorderLayout.SOUTH);
+
         return sidebar;
     }
 
     private JPanel createTopBar() {
-        JPanel top = new JPanel(new BorderLayout());
-        top.setBackground(Color.WHITE);
+        JPanel topContainer = new JPanel(new BorderLayout());
+        topContainer.setBackground(Color.WHITE);
+
+        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        userPanel.setBackground(new Color(180, 180, 180));
+        userPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 20));
+
+        JLabel bell = new JLabel("🔔");
+        bell.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        userPanel.add(bell);
+
+        JLabel userLabel = new JLabel("User ▾");
+        userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        userPanel.add(userLabel);
+
+        SwingUtilities.invokeLater(() -> {
+            if (currentUser != null && currentUser.getUsername() != null) {
+                userLabel.setText(currentUser.getUsername().trim() + " ▾");
+            }
+        });
+
+        userLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                dispose();
+                new admin.MyProfilePage(currentUser).setVisible(true);
+            }
+        });
+
+        topContainer.add(userPanel, BorderLayout.NORTH);
 
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         headerPanel.setBackground(Color.WHITE);
@@ -90,8 +154,9 @@ public class ManualStockAdjustmentPage extends admin.UIBase {
         title.setForeground(primaryColor);
         headerPanel.add(title);
 
-        top.add(headerPanel, BorderLayout.SOUTH);
-        return top;
+        topContainer.add(headerPanel, BorderLayout.SOUTH);
+
+        return topContainer;
     }
 
     private JPanel createMenuItem(String text, boolean selected) {
@@ -99,6 +164,7 @@ public class ManualStockAdjustmentPage extends admin.UIBase {
         item.setBackground(selected ? new Color(230, 230, 230) : Color.WHITE);
         item.setMaximumSize(new Dimension(200, 50));
         item.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        item.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         JLabel label = new JLabel(text);
         label.setFont(new Font("Serif", Font.BOLD, 16));
@@ -118,12 +184,20 @@ public class ManualStockAdjustmentPage extends admin.UIBase {
 
         stockTable = new JTable(tableModel);
         stockTable.setRowHeight(28);
+        stockTable.getTableHeader().setBackground(new Color(240, 240, 240));
+        stockTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
+        stockTable.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        stockTable.setSelectionBackground(new Color(232, 242, 254));
+        stockTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        stockTable.setShowGrid(true);
+        stockTable.setGridColor(new Color(230, 230, 230));
+        
         JScrollPane scrollPane = new JScrollPane(stockTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
         JButton adjustBtn = new JButton("Adjust Stock");
         adjustBtn.setPreferredSize(new Dimension(150, 40));
-        adjustBtn.setBackground(new Color(96, 96, 96));
+        adjustBtn.setBackground(primaryColor);
         adjustBtn.setForeground(Color.WHITE);
         adjustBtn.setFocusPainted(false);
         adjustBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -132,6 +206,7 @@ public class ManualStockAdjustmentPage extends admin.UIBase {
 
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
         bottom.setBackground(Color.WHITE);
+        bottom.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         bottom.add(adjustBtn);
 
         content.add(scrollPane, BorderLayout.CENTER);
