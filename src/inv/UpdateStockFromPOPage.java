@@ -143,7 +143,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
 
         tableModel = new DefaultTableModel(new Object[]{"PO ID", "Item Code", "Item Name", "Ordered Qty", "Received Qty"}, 0) {
             public boolean isCellEditable(int r, int c) {
-                return c == 4; // Only received quantity is editable
+                return c == 4; 
             }
         };
 
@@ -196,7 +196,7 @@ public class UpdateStockFromPOPage extends admin.UIBase {
                         po.getItemCode(),
                         po.getItemName(),
                         po.getQuantity(),
-                        po.getQuantity() // default received = ordered
+                        po.getQuantity() 
                 });
             }
         } catch (IOException e) {

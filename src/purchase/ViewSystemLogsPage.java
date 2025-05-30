@@ -246,7 +246,7 @@ public class ViewSystemLogsPage extends UIBase {
 
 
         JLabel actionLabel = new JLabel("Action:");
-        // Filter options relevant to Sales Manager actions
+        
         String[] actionOptions = {"All", SystemLog.ACTION_LOGIN, SystemLog.ACTION_LOGOUT,
                 SystemLog.ACTION_CREATE, SystemLog.ACTION_UPDATE, SystemLog.ACTION_DELETE, SystemLog.ACTION_VIEW};
         actionFilter = new JComboBox<>(actionOptions);
@@ -254,7 +254,7 @@ public class ViewSystemLogsPage extends UIBase {
 
 
         JButton refreshButton = new JButton("Refresh");
-        styleButton(refreshButton); // Reuse styleButton
+        styleButton(refreshButton); 
         refreshButton.addActionListener(e -> loadLogs());
 
         filtersPanel.add(searchLabel);
@@ -349,11 +349,11 @@ public class ViewSystemLogsPage extends UIBase {
 
 
         try {
-            // Filter based on current user and selected action/search text
-            List<SystemLog> dbLogs = new DatabaseHelper().getAllSystemLogs(); // fresh logs
+            
+            List<SystemLog> dbLogs = new DatabaseHelper().getAllSystemLogs(); 
             List<SystemLog> filteredList = dbLogs.stream()
                     .filter(log ->
-                            log.getUserId().equals(currentUser.getUserId()) && // logs for the current user
+                            log.getUserId().equals(currentUser.getUserId()) && 
                                     (searchText.isEmpty() ||
                                             log.getLogId().toLowerCase().contains(searchText) ||
                                             log.getDetails().toLowerCase().contains(searchText)) &&
@@ -395,7 +395,7 @@ public class ViewSystemLogsPage extends UIBase {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(150, 40)); // Adjusted size
+        button.setPreferredSize(new Dimension(150, 40)); 
     }
 
     private void goBackToDashboard() {

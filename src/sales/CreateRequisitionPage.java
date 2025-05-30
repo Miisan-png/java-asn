@@ -1,11 +1,11 @@
-// sales/CreateRequisitionPage.java
+
 package sales;
 
 import admin.UIBase;
 import database.DatabaseHelper;
 import java.awt.*;
 import java.io.IOException;
-import java.time.LocalDate; // Assuming Item model is needed to fetch supplier ID
+import java.time.LocalDate; 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import javax.swing.*;
@@ -235,12 +235,12 @@ public class CreateRequisitionPage extends UIBase {
 
         supplierCodeField = new JTextField(20);
         styleTextField(supplierCodeField);
-        supplierCodeField.setEditable(false); // Supplier Code will be auto-populated
+        supplierCodeField.setEditable(false); 
         gbc.gridx = 1;
         gbc.gridy = 3;
         contentPanel.add(supplierCodeField, gbc);
 
-        // Add action listener to itemCodeField to auto-populate supplierCodeField
+        
         itemCodeField.addActionListener(e -> populateSupplierCode());
 
 
@@ -252,7 +252,7 @@ public class CreateRequisitionPage extends UIBase {
         btnGbc.insets = new Insets(10, 20, 10, 20);
         btnGbc.gridy = 0;
 
-        // Save button (left)
+        
         btnGbc.gridx = 0;
         btnGbc.anchor = GridBagConstraints.WEST;
         JButton saveButton = new JButton("Save");
@@ -260,7 +260,7 @@ public class CreateRequisitionPage extends UIBase {
         saveButton.addActionListener(e -> handleSaveRequisition());
         buttonPanel.add(saveButton, btnGbc);
 
-        // Check Supplier button (right)
+        
         btnGbc.gridx = 1;
         btnGbc.anchor = GridBagConstraints.EAST;
         JButton checkSupplierBtn = new JButton("Check Supplier");
@@ -268,7 +268,7 @@ public class CreateRequisitionPage extends UIBase {
         checkSupplierBtn.addActionListener(e -> populateSupplierCode());
         buttonPanel.add(checkSupplierBtn, btnGbc);
 
-        // Add to contentPanel using GridBagConstraints
+        
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
@@ -343,7 +343,7 @@ public class CreateRequisitionPage extends UIBase {
             }
             LocalDate requiredDate = LocalDate.parse(deliveryDateStr);
 
-            // Generate a unique requisition ID. A more robust method might be needed.
+            
             String requisitionId = "REQ" + System.currentTimeMillis();
 
             PurchaseRequisition newRequisition = new PurchaseRequisition(
@@ -352,10 +352,10 @@ public class CreateRequisitionPage extends UIBase {
                     quantity,
                     requiredDate,
                     currentUser.getUserId(),
-                    PurchaseRequisition.STATUS_PENDING // New requisitions start as Pending
+                    PurchaseRequisition.STATUS_PENDING 
             );
 
-            // Attempt to fetch item name for completeness, though not strictly required by the model constructor used here
+            
             DatabaseHelper dbHelper = new DatabaseHelper();
             try {
                 Item item = dbHelper.getItemByCode(itemCode);
@@ -364,14 +364,14 @@ public class CreateRequisitionPage extends UIBase {
                 }
             } catch (IOException ex) {
                 System.out.println("Could not fetch item name for requisition: " + ex.getMessage());
-                newRequisition.setItemName("Unknown Item"); // Set a default or handle as appropriate
+                newRequisition.setItemName("Unknown Item"); 
             }
 
 
             dbHelper.addPurchaseRequisition(newRequisition);
             JOptionPane.showMessageDialog(this, "Purchase Requisition created successfully!\nID: " + requisitionId, "Success", JOptionPane.INFORMATION_MESSAGE);
             logSystemAction(SystemLog.ACTION_CREATE, "Created purchase requisition: " + requisitionId);
-            handleResetForm(); // Clear form after saving
+            handleResetForm(); 
 
         } catch (DateTimeParseException ex) {
             JOptionPane.showMessageDialog(this, "Invalid delivery date format. Please use YYYY-MM-DD.", "Input Error", JOptionPane.ERROR_MESSAGE);

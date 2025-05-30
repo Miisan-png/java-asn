@@ -54,7 +54,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
         sidebar.setBackground(Color.WHITE);
         sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
 
-        // Logo Panel
+        
         JPanel logoPanel = new JPanel(new BorderLayout());
         logoPanel.setBackground(Color.WHITE);
         logoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -65,12 +65,12 @@ public class ManagePurchaseOrdersPage extends JFrame {
         logoPanel.add(logo, BorderLayout.CENTER);
         sidebar.add(logoPanel, BorderLayout.NORTH);
 
-        // Menu Items
+        
         JPanel menuPanel = new JPanel();
         menuPanel.setBackground(Color.WHITE);
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
 
-        // Dashboard Item
+        
         JPanel dashboardItem = new JPanel(new BorderLayout());
         dashboardItem.setBackground(new Color(230, 230, 230));
         dashboardItem.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
@@ -87,7 +87,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
             }
         });
 
-        // Purchase Orders Item
+        
         JPanel ordersItem = new JPanel(new BorderLayout());
         ordersItem.setBackground(Color.WHITE);
         ordersItem.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
@@ -103,7 +103,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
 
         sidebar.add(menuPanel, BorderLayout.CENTER);
 
-        // Logout Button
+        
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         bottomPanel.setBackground(Color.WHITE);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
@@ -133,7 +133,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(Color.WHITE);
 
-        // User Panel
+        
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         userPanel.setBackground(new Color(180, 180, 180));
         userPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 20));
@@ -161,7 +161,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
 
         top.add(userPanel, BorderLayout.NORTH);
 
-        // Title Panel
+        
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         titlePanel.setBackground(Color.WHITE);
         titlePanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
@@ -180,7 +180,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Search Panel
+        
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         searchPanel.setBackground(Color.WHITE);
         
@@ -203,7 +203,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
         
         panel.add(searchPanel, BorderLayout.NORTH);
 
-        // Table Setup
+        
         String[] cols = {"Order ID", "Requisition ID", "Item Code", "Item Name",
                 "Quantity", "Unit Price", "Total", "Status", "Order Date", "Supplier ID"};
 
@@ -247,7 +247,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
         JScrollPane scroll = new JScrollPane(poTable);
         scroll.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
-        // Action Buttons
+        
         JPanel buttonPanel = new JPanel(new GridLayout(1, 5, 10, 0));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
@@ -267,7 +267,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
         panel.add(scroll, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.SOUTH);
         
-        // Double-click to edit
+        
         poTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
@@ -567,7 +567,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
             
             saveButton.addActionListener(e -> {
                 try {
-                    // to validate
+                    
                     if (reqIdField.getText().trim().isEmpty() || 
                         itemCodeField.getText().trim().isEmpty() ||
                         itemNameField.getText().trim().isEmpty() ||
@@ -577,7 +577,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
                         throw new IllegalArgumentException("All fields marked with * are required");
                     }
                     
-                    // Validate numbers
+                    
                     int quantity = Integer.parseInt(quantityField.getText());
                     double unitPrice = Double.parseDouble(unitPriceField.getText());
                     
@@ -585,7 +585,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
                         throw new NumberFormatException("Quantity and price must be positive numbers");
                     }
                     
-                    // Update PO
+                    
                     po.setRequisitionId(reqIdField.getText().trim());
                     po.setItemCode(itemCodeField.getText().trim());
                     po.setItemName(itemNameField.getText().trim());
@@ -597,7 +597,7 @@ public class ManagePurchaseOrdersPage extends JFrame {
                                   
                     db.updatePurchaseOrder(po);
                     
-                    // Log the action
+                    
                     SystemLog log = new SystemLog(
                         "LOG" + System.currentTimeMillis(),
                         currentUser.getUserId(),

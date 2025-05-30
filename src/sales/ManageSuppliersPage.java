@@ -282,7 +282,7 @@ public class ManageSuppliersPage extends UIBase {
                     JOptionPane.YES_NO_OPTION
             );
             if (choice == JOptionPane.YES_OPTION) {
-                // Handle the add supplier action
+                
                 handleAddSupplier();
             }
         });
@@ -305,7 +305,7 @@ public class ManageSuppliersPage extends UIBase {
                 DatabaseHelper dbHelper = new DatabaseHelper();
                 Supplier supplier = dbHelper.getSupplierById(supplierId);
                 if (supplier != null) {
-                    // Handle the edit supplier action
+                    
                     handleEditSupplier(supplier);
                 }
             } catch (IOException ex) {
@@ -500,9 +500,9 @@ public class ManageSuppliersPage extends UIBase {
 }
 
     
-    // Fixed method to handle editing a supplier with the correct parameters
+    
     private void handleEditSupplier(Supplier supplier) {
-        // Create a form panel with fields pre-filled with supplier details
+        
         JPanel formPanel = new JPanel(new GridLayout(0, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -510,7 +510,7 @@ public class ManageSuppliersPage extends UIBase {
         JTextField contactPersonField = new JTextField(supplier.getContactPerson());
         JTextField contactNumberField = new JTextField(supplier.getContactNumber());
         JTextField emailField = new JTextField(supplier.getEmail());
-        JTextField addressField = new JTextField(supplier.getAddress()); // Added address field
+        JTextField addressField = new JTextField(supplier.getAddress()); 
         JTextField suppliedItemsField = new JTextField(supplier.getSuppliedItems());
 
         String lastOrderDateStr = supplier.getLastOrderDate() != null
@@ -533,8 +533,8 @@ public class ManageSuppliersPage extends UIBase {
         formPanel.add(contactNumberField);
         formPanel.add(new JLabel("Email:"));
         formPanel.add(emailField);
-        formPanel.add(new JLabel("Address:")); // Added address label
-        formPanel.add(addressField); // Added address field
+        formPanel.add(new JLabel("Address:")); 
+        formPanel.add(addressField); 
         formPanel.add(new JLabel("Supplied Items:"));
         formPanel.add(suppliedItemsField);
         formPanel.add(new JLabel("Last Order Date (YYYY-MM-DD):"));
@@ -551,7 +551,7 @@ public class ManageSuppliersPage extends UIBase {
         );
 
         if (result == JOptionPane.OK_OPTION) {
-            // Validate input
+            
             if (supplierNameField.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                         "Supplier Name is required.",
@@ -560,7 +560,7 @@ public class ManageSuppliersPage extends UIBase {
                 return;
             }
 
-            // Validate date format if provided
+            
             LocalDate lastOrderDate = null;
             String newLastOrderDateStr = lastOrderDateField.getText().trim();
             if (!newLastOrderDateStr.isEmpty()) {
@@ -575,22 +575,22 @@ public class ManageSuppliersPage extends UIBase {
                 }
             }
 
-            // Update the supplier object
+            
             supplier.setSupplierName(supplierNameField.getText().trim());
             supplier.setContactPerson(contactPersonField.getText().trim());
             supplier.setContactNumber(contactNumberField.getText().trim());
             supplier.setEmail(emailField.getText().trim());
-            supplier.setAddress(addressField.getText().trim()); // Added address update
+            supplier.setAddress(addressField.getText().trim()); 
             supplier.setSuppliedItems(suppliedItemsField.getText().trim());
             supplier.setLastOrderDate(lastOrderDate);
             supplier.setStatus((String) statusComboBox.getSelectedItem());
 
-            // Update the supplier in the database
+            
             try {
                 DatabaseHelper dbHelper = new DatabaseHelper();
                 dbHelper.updateSupplier(supplier);
 
-                // Reload suppliers to refresh the table
+                
                 loadSuppliers();
 
                 JOptionPane.showMessageDialog(this,

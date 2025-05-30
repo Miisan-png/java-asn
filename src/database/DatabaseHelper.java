@@ -55,7 +55,7 @@ public class DatabaseHelper {
         }
     }
 
-    // --- User Methods ---
+    
     public List<User> getAllUsers() throws IOException {
         List<User> users = new ArrayList<>();
         File file = new File(USERS_FILE);
@@ -153,15 +153,15 @@ public class DatabaseHelper {
         List<User> users = getAllUsers();
         int maxId = 0;
         for (User user : users) {
-            String idNumberStr = user.getUserId().replaceAll("[^0-9]", ""); // Extract only digits
+            String idNumberStr = user.getUserId().replaceAll("[^0-9]", ""); 
             try {
                 int id = Integer.parseInt(idNumberStr);
                 maxId = Math.max(maxId, id);
             } catch (NumberFormatException e) {
-                // Ignore users with non-standard IDs for generation purposes
+                
             }
         }
-        // This might need adjustment based on the actual ID format used for different roles
+        
         return "U" + String.format("%03d", maxId + 1);
     }
 
@@ -229,7 +229,7 @@ public class DatabaseHelper {
         }
     }
 
-    // --- Item Methods ---
+    
     public List<Item> getAllItems() throws IOException {
     List<Item> items = new ArrayList<>();
     File file = new File(ITEMS_FILE);
@@ -250,7 +250,7 @@ public class DatabaseHelper {
             }
 
             String[] parts = line.split(",");
-            if (parts.length >= 5) { // Updated to expect 5 fields
+            if (parts.length >= 5) { 
                 String itemCode = parts[0];
                 String itemName = parts[1];
                 String supplierId = parts[2];
@@ -265,7 +265,7 @@ public class DatabaseHelper {
                     System.err.println("Skipping item with invalid numeric data: " + line);
                 }
             } else if (parts.length >= 3) {
-                // Backward compatibility for old format
+                
                 String itemCode = parts[0];
                 String itemName = parts[1];
                 String supplierId = parts[2];
@@ -376,7 +376,7 @@ public class DatabaseHelper {
 }
 
     
-    // --- Purchase Requisition Methods ---
+    
     public List<PurchaseRequisition> getAllPurchaseRequisitions() throws IOException {
         List<PurchaseRequisition> requisitions = new ArrayList<>();
         File file = new File(REQUISITIONS_FILE);
@@ -528,7 +528,7 @@ public class DatabaseHelper {
         }
     }
 
-    // --- Purchase Order Methods ---
+    
     public List<PurchaseOrder> getAllPurchaseOrders() throws IOException {
         List<PurchaseOrder> purchaseOrders = new ArrayList<>();
         File file = new File(PURCHASE_ORDERS_FILE);
@@ -701,7 +701,7 @@ public class DatabaseHelper {
         }
     }
 
-    // --- Stock Methods ---
+    
     public List<Stock> getAllStock() throws IOException {
         List<Stock> stockList = new ArrayList<>();
         File file = new File(STOCK_FILE);
@@ -790,7 +790,7 @@ public class DatabaseHelper {
     }
 
 
-    // --- Financial Methods ---
+    
     public List<Financial> getAllFinancialReports() throws IOException {
         List<Financial> financialList = new ArrayList<>();
         File file = new File(FINANCIAL_FILE);
@@ -889,7 +889,7 @@ public class DatabaseHelper {
         }
     }
 
-    // --- System Log Methods ---
+    
     public List<SystemLog> getAllSystemLogs() throws IOException {
         List<SystemLog> logs = new ArrayList<>();
         File file = new File(SYSTEM_LOGS_FILE);
@@ -966,7 +966,7 @@ public class DatabaseHelper {
         }
     }
 
-    // --- Sales Entry Methods ---
+    
     public List<SalesEntry> getAllSalesEntries() throws IOException {
         List<SalesEntry> salesEntries = new ArrayList<>();
         File file = new File(SALES_ENTRY_FILE);
@@ -1093,7 +1093,7 @@ public class DatabaseHelper {
         }
     }
 
-    // --- Supplier Methods ---
+    
     public List<Supplier> getAllSuppliers() throws IOException {
         List<Supplier> suppliers = new ArrayList<>();
         File file = new File(SUPPLIERS_FILE);
@@ -1114,7 +1114,7 @@ public class DatabaseHelper {
                 }
 
                 String[] parts = line.split(",");
-                // Expecting at least 9 parts: id, name, contactPerson, contactNumber, email, address, suppliedItems, lastOrderDate, status
+                
                 if (parts.length >= 9) {
                     try {
                         String supplierId = parts[0];
@@ -1123,7 +1123,7 @@ public class DatabaseHelper {
                         String contactNumber = parts[3];
                         String email = parts[4];
 
-                        // Reconstruct the address field - it's the parts between index 5 and (length - 3)
+                        
                         StringBuilder addressBuilder = new StringBuilder();
                         for (int i = 5; i < parts.length - 3; i++) {
                             addressBuilder.append(parts[i]);
@@ -1140,11 +1140,11 @@ public class DatabaseHelper {
 
                         LocalDate lastOrderDate = null;
                         try {
-                            // Trim any leading/trailing whitespace from the date string
+                            
                             lastOrderDate = LocalDate.parse(lastOrderDateStr.trim(), DATE_FORMATTER);
                         } catch (DateTimeParseException e) {
                             System.err.println("Skipping invalid supplier line (date format): " + line + " - " + e.getMessage());
-                            continue; // Skip this line if date is invalid
+                            continue; 
                         }
 
 
@@ -1204,7 +1204,7 @@ public class DatabaseHelper {
                     int id = Integer.parseInt(supplier.getSupplierId().substring(3));
                     maxId = Math.max(maxId, id);
                 } catch (NumberFormatException e) {
-                    // Ignore suppliers with non-standard IDs
+                    
                 }
             }
         }
@@ -1281,7 +1281,7 @@ public class DatabaseHelper {
     }
 
     public void addManagePurchaseOrdersPage(ManagePurchaseOrdersPage newPO) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     public void addInventoryLog(SystemLog log) throws IOException {
@@ -1324,13 +1324,13 @@ public List<SystemLog> getInventoryLogs() throws IOException {
             if (parts.length >= 7) {
                 try {
                     SystemLog log = new SystemLog(
-                            parts[0],      // logId
-                            parts[1],      // userId
-                            parts[2],      // username
-                            parts[3],      // action
-                            parts[4],      // details
-                            parts[5],      // timestamp
-                            parts[6]       // userRole
+                            parts[0],      
+                            parts[1],      
+                            parts[2],      
+                            parts[3],      
+                            parts[4],      
+                            parts[5],      
+                            parts[6]       
                     );
                     logs.add(log);
                 } catch (Exception e) {
@@ -1342,7 +1342,7 @@ public List<SystemLog> getInventoryLogs() throws IOException {
     return logs;
 }
 
-// Add methods for managing stock if not already present
+
 public void updateStockQuantity(String itemCode, int newQuantity) throws IOException {
     List<Stock> stocks = getAllStock();
     boolean found = false;
@@ -1366,7 +1366,7 @@ public void updateStockQuantity(String itemCode, int newQuantity) throws IOExcep
 public void addStockItem(Stock stockItem) throws IOException {
     List<Stock> stocks = getAllStock();
     
-    // Check if item already exists
+    
     for (Stock stock : stocks) {
         if (stock.getItemCode().equals(stockItem.getItemCode())) {
             throw new IllegalArgumentException("Item already exists in stock: " + stockItem.getItemCode());

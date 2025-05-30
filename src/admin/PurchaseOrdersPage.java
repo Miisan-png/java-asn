@@ -70,7 +70,7 @@ public class PurchaseOrdersPage extends UIBase {
         for (PurchaseOrder order : ordersList) {
             if (order != null && (status == null || order.getStatus().equals(status))) {
                 try {
-                    // Create default formatters if the class ones are null
+                    
                     NumberFormat currFormatter = (currencyFormatter != null) ?
                             currencyFormatter : NumberFormat.getCurrencyInstance();
 

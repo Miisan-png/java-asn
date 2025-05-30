@@ -172,10 +172,10 @@ public class ViewSupplierandItemsPage extends UIBase {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Create tabbed pane
+        
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        // Suppliers tab
+        
         suppliersTableModel = new DefaultTableModel(
             new Object[]{"Supplier ID", "Name", "Contact Person", "Phone", "Email", "Status"}, 0) {
             @Override
@@ -188,7 +188,7 @@ public class ViewSupplierandItemsPage extends UIBase {
         JPanel suppliersPanel = createTablePanel(suppliersTable, "Suppliers");
         tabbedPane.addTab("Suppliers", suppliersPanel);
 
-        // Items tab
+        
         itemsTableModel = new DefaultTableModel(
             new Object[]{"Item Code", "Name", "Supplier ID"}, 0) {
             @Override
@@ -278,20 +278,20 @@ public class ViewSupplierandItemsPage extends UIBase {
         try (BufferedReader br = new BufferedReader(new FileReader(suppliersFile))) {
             suppliersTableModel.setRowCount(0);
             
-            // Skip header line
+            
             br.readLine();
             
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length >= 9) { // Ensure we have enough columns
+                if (data.length >= 9) { 
                     suppliersTableModel.addRow(new Object[]{
-                        data[0], // supplierId
-                        data[1], // supplierName
-                        data[2], // contactPerson
-                        data[3], // contactNumber
-                        data[4], // email
-                        data[10]  // status
+                        data[0], 
+                        data[1], 
+                        data[2], 
+                        data[3], 
+                        data[4], 
+                        data[10]  
                     });
                 }
             }
@@ -304,17 +304,17 @@ public class ViewSupplierandItemsPage extends UIBase {
         try (BufferedReader br = new BufferedReader(new FileReader(itemsFile))) {
             itemsTableModel.setRowCount(0);
             
-            // Skip header line
+            
             br.readLine();
             
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length >= 3) { // Ensure we have enough columns
+                if (data.length >= 3) { 
                     itemsTableModel.addRow(new Object[]{
-                        data[0], // itemCode
-                        data[1], // itemName
-                        data[2]  // supplierId
+                        data[0], 
+                        data[1], 
+                        data[2]  
                     });
                 }
             }

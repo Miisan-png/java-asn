@@ -170,7 +170,7 @@ public class TrackPurchaseOrderPage extends UIBase {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Main content removed Last Updated column
+        
         String[] columnNames = {"PO ID", "Item Code", "Quantity", "Status"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -182,13 +182,13 @@ public class TrackPurchaseOrderPage extends UIBase {
         ordersTable = new JTable(tableModel);
         styleTable(ordersTable);
         
-        //  custom renderer for status column (column 3)
+        
         ordersTable.setDefaultRenderer(Object.class, new StatusCellRenderer());
         
         JScrollPane scrollPane = new JScrollPane(ordersTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
-        // filter 
+        
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         buttonsPanel.setBackground(Color.WHITE);
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
@@ -270,7 +270,7 @@ public class TrackPurchaseOrderPage extends UIBase {
         new PurchaseDashboardPage(currentUser).setVisible(true);
     }
 
-    // Custom cell renderer for status column
+    
     private static class StatusCellRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,

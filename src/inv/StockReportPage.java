@@ -27,7 +27,7 @@ public class StockReportPage extends UIBase {
         root.setBackground(Color.WHITE);
         root.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Header
+        
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
         JButton backBtn = new JButton("← Back to Dashboard");
@@ -44,7 +44,7 @@ public class StockReportPage extends UIBase {
         topPanel.add(title, BorderLayout.CENTER);
         root.add(topPanel, BorderLayout.NORTH);
 
-        // Table
+        
         tableModel = new DefaultTableModel(new Object[]{"Item Code", "Item Name", "Quantity", "Location", "Last Updated", "Status"}, 0);
         stockTable = new JTable(tableModel);
         stockTable.setFillsViewportHeight(true);
@@ -53,7 +53,7 @@ public class StockReportPage extends UIBase {
         JScrollPane scrollPane = new JScrollPane(stockTable);
         root.add(scrollPane, BorderLayout.CENTER);
 
-        // Action panel
+        
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         actionPanel.setBackground(Color.WHITE);
         JButton generateBtn = new JButton("📝 Generate Full Report");

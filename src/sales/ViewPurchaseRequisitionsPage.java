@@ -81,7 +81,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
 
         filterRequisitions(null);
         
-        // Force refresh the UI to update username display
+        
         SwingUtilities.invokeLater(() -> {
             repaint();
             revalidate();
@@ -135,7 +135,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
     for (PurchaseRequisition requisition : requisitionsList) {
         if (requisition != null) {
             try {
-                // Get item name if not set
+                
                 String itemName = requisition.getItemName();
                 if (itemName == null || itemName.isEmpty()) {
                     try {
@@ -151,7 +151,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
                     }
                 }
 
-                // FIXED: Get supplier code by looking up the item
+                
                 String supplierCode = "";
                 try {
                     DatabaseHelper db = new DatabaseHelper();
@@ -166,7 +166,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
                     System.err.println("Error fetching supplier code for requisition " + requisition.getRequisitionId() + ": " + e.getMessage());
                 }
 
-                // Format date safely
+                
                 String dateStr = "";
                 LocalDate requiredDate = requisition.getRequiredDate();
                 if (requiredDate != null) {
@@ -177,14 +177,14 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
                     }
                 }
 
-                // FIXED: Added supplier code to the row data
+                
                 Object[] rowData = {
                         requisition.getRequisitionId(),
                         requisition.getItemCode(),
                         itemName,
                         requisition.getQuantity(),
                         dateStr,
-                        supplierCode, // This was missing!
+                        supplierCode, 
                         requisition.getStatus()
                 };
                 tableModel.addRow(rowData);
@@ -328,7 +328,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
 
     
 
-    // Replace your createTopBar method with this:
+    
 
 private JPanel createTopBar() {
     JPanel topContainer = new JPanel(new BorderLayout());
@@ -343,13 +343,13 @@ private JPanel createTopBar() {
     bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
     userPanel.add(bell);
 
-    // Create the user label but set text later
+    
     JLabel userLabel = new JLabel("User ▾");
     userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
     userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
     userPanel.add(userLabel);
 
-    // Update the username after a short delay to ensure currentUser is set
+    
     SwingUtilities.invokeLater(() -> {
         if (currentUser != null && currentUser.getUsername() != null) {
             userLabel.setText(currentUser.getUsername().trim() + " ▾");
@@ -405,7 +405,7 @@ private JPanel createTopBar() {
     contentPanel.setBackground(Color.WHITE);
     contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-    // Make sure we have a table model
+    
     if (tableModel == null) {
         String[] columnNames = {"PR ID", "Item Code", "Item Name", "Quantity", "Required Date", "Supplier Code", "Status"};
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -415,7 +415,7 @@ private JPanel createTopBar() {
             }
             @Override
             public Class<?> getColumnClass(int column) {
-                if (column == 3) { // Quantity column
+                if (column == 3) { 
                     return Integer.class;
                 }
                 return String.class;
@@ -423,7 +423,7 @@ private JPanel createTopBar() {
         };
     }
 
-    // Create table with the model
+    
     requisitionsTable = new JTable(tableModel);
     requisitionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     requisitionsTable.getTableHeader().setBackground(new Color(240, 240, 240));
@@ -431,16 +431,16 @@ private JPanel createTopBar() {
     requisitionsTable.setRowHeight(30);
     requisitionsTable.setGridColor(Color.LIGHT_GRAY);
 
-    // Set column widths to ensure visibility
-    requisitionsTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // PR ID
-    requisitionsTable.getColumnModel().getColumn(1).setPreferredWidth(80);  // Item Code
-    requisitionsTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Item Name
-    requisitionsTable.getColumnModel().getColumn(3).setPreferredWidth(80);  // Quantity
-    requisitionsTable.getColumnModel().getColumn(4).setPreferredWidth(120); // Required Date
-    requisitionsTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Supplier Code
-    requisitionsTable.getColumnModel().getColumn(6).setPreferredWidth(80);  // Status
+    
+    requisitionsTable.getColumnModel().getColumn(0).setPreferredWidth(80);  
+    requisitionsTable.getColumnModel().getColumn(1).setPreferredWidth(80);  
+    requisitionsTable.getColumnModel().getColumn(2).setPreferredWidth(150); 
+    requisitionsTable.getColumnModel().getColumn(3).setPreferredWidth(80);  
+    requisitionsTable.getColumnModel().getColumn(4).setPreferredWidth(120); 
+    requisitionsTable.getColumnModel().getColumn(5).setPreferredWidth(100); 
+    requisitionsTable.getColumnModel().getColumn(6).setPreferredWidth(80);  
 
-    // Add color coding for different status values
+    
     requisitionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -448,17 +448,17 @@ private JPanel createTopBar() {
 
             if (!isSelected) {
                 try {
-                    if (column == 6) { // Status column
+                    if (column == 6) { 
                         String status = value != null ? value.toString() : "";
                         if ("Approved".equals(status)) {
-                            c.setBackground(new Color(230, 255, 230)); // Light green
-                            c.setForeground(new Color(0, 100, 0));     // Dark green
+                            c.setBackground(new Color(230, 255, 230)); 
+                            c.setForeground(new Color(0, 100, 0));     
                         } else if ("Rejected".equals(status)) {
-                            c.setBackground(new Color(255, 230, 230)); // Light red
-                            c.setForeground(new Color(180, 0, 0));     // Dark red
-                        } else { // Pending
-                            c.setBackground(new Color(255, 255, 230)); // Light yellow
-                            c.setForeground(new Color(180, 100, 0));   // Orange/brown
+                            c.setBackground(new Color(255, 230, 230)); 
+                            c.setForeground(new Color(180, 0, 0));     
+                        } else { 
+                            c.setBackground(new Color(255, 255, 230)); 
+                            c.setForeground(new Color(180, 100, 0));   
                         }
                     } else {
                         c.setBackground(Color.WHITE);
@@ -473,28 +473,28 @@ private JPanel createTopBar() {
         }
     });
 
-    // Put the table in a scroll pane
+    
     JScrollPane scrollPane = new JScrollPane(requisitionsTable);
     scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     scrollPane.setPreferredSize(new Dimension(700, 400));
     contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-    // FIXED: Consistent button colors (grey tone like other pages)
+    
     JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
     buttonsPanel.setBackground(Color.WHITE);
     buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
-    // Edit Button - using consistent grey color
+    
     JButton editButton = new JButton("Edit Requisition");
     styleButton(editButton);
-    // Remove the custom color to use the default grey from styleButton
+    
     editButton.addActionListener(e -> handleEditRequisition());
     buttonsPanel.add(editButton);
 
-    // Delete Button - using consistent grey color
+    
     JButton deleteButton = new JButton("Delete Requisition");
     styleButton(deleteButton);
-    // Remove the custom color to use the default grey from styleButton
+    
     deleteButton.addActionListener(e -> handleDeleteRequisition());
     buttonsPanel.add(deleteButton);
 
@@ -564,7 +564,7 @@ private JPanel createTopBar() {
         String requiredDate = (String) requisitionsTable.getValueAt(selectedRow, 4);
         String status = (String) requisitionsTable.getValueAt(selectedRow, 6);
 
-        // Check if requisition can be edited (only pending ones)
+        
         if (!"Pending".equals(status)) {
             JOptionPane.showMessageDialog(this,
                     "Only pending requisitions can be edited.\nThis requisition is: " + status,
@@ -573,7 +573,7 @@ private JPanel createTopBar() {
             return;
         }
 
-        // Create edit form
+        
         JPanel editPanel = new JPanel(new GridLayout(0, 2, 10, 10));
         editPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -582,11 +582,11 @@ private JPanel createTopBar() {
         JTextField dateField = new JTextField(requiredDate);
 
         editPanel.add(new JLabel("Requisition ID:"));
-        editPanel.add(new JLabel(requisitionId)); // Read-only
+        editPanel.add(new JLabel(requisitionId)); 
         editPanel.add(new JLabel("Item Code:"));
         editPanel.add(itemCodeField);
         editPanel.add(new JLabel("Item Name:"));
-        editPanel.add(new JLabel(itemName)); // Read-only
+        editPanel.add(new JLabel(itemName)); 
         editPanel.add(new JLabel("Quantity:"));
         editPanel.add(quantityField);
         editPanel.add(new JLabel("Required Date (dd-MM-yyyy):"));
@@ -608,7 +608,7 @@ private JPanel createTopBar() {
                     return;
                 }
 
-                // Parse and validate date
+                
                 LocalDate newRequiredDate;
                 try {
                     newRequiredDate = LocalDate.parse(newDateStr, displayDateFormatter);
@@ -619,7 +619,7 @@ private JPanel createTopBar() {
                     return;
                 }
 
-                // Update the requisition
+                
                 DatabaseHelper dbHelper = new DatabaseHelper();
                 PurchaseRequisition requisition = dbHelper.getPurchaseRequisitionById(requisitionId);
                 
@@ -628,14 +628,14 @@ private JPanel createTopBar() {
                     requisition.setQuantity(newQuantity);
                     requisition.setRequiredDate(newRequiredDate);
                     
-                    // Update item name if item code changed
+                    
                     try {
                         models.Item item = dbHelper.getItemByCode(newItemCode);
                         if (item != null) {
                             requisition.setItemName(item.getItemName());
                         }
                     } catch (Exception ex) {
-                        // Keep old item name if lookup fails
+                        
                     }
 
                     dbHelper.updatePurchaseRequisition(requisition);
@@ -646,7 +646,7 @@ private JPanel createTopBar() {
                             JOptionPane.INFORMATION_MESSAGE);
                     
                     logSystemAction(SystemLog.ACTION_UPDATE, "Updated purchase requisition: " + requisitionId);
-                    loadRequisitions(); // Refresh the table
+                    loadRequisitions(); 
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "Requisition not found in database.",
@@ -677,7 +677,7 @@ private JPanel createTopBar() {
 
 private void updateUserDisplay() {
     if (currentUser != null) {
-        // Find the user label and update it
+        
         Container parent = getContentPane();
         updateUserLabelRecursive(parent);
         repaint();
@@ -690,7 +690,7 @@ private void updateUserLabelRecursive(Container container) {
             JLabel label = (JLabel) comp;
             String text = label.getText();
             if (text != null && text.contains("▾")) {
-                // This is likely the user label
+                
                 String newDisplayName = getDisplayName();
                 label.setText(newDisplayName + " ▾");
                 System.out.println("Updated user label to: " + newDisplayName);
@@ -703,7 +703,7 @@ private void updateUserLabelRecursive(Container container) {
 
 
 
-// FIXED: Added Delete Requisition functionality
+
 private void handleDeleteRequisition() {
     int selectedRow = requisitionsTable.getSelectedRow();
     if (selectedRow == -1) {
@@ -719,7 +719,7 @@ private void handleDeleteRequisition() {
         String itemName = (String) requisitionsTable.getValueAt(selectedRow, 2);
         String status = (String) requisitionsTable.getValueAt(selectedRow, 6);
 
-        // Check if requisition can be deleted (only pending ones)
+        
         if (!"Pending".equals(status)) {
             JOptionPane.showMessageDialog(this,
                     "Only pending requisitions can be deleted.\nThis requisition is: " + status,
@@ -748,7 +748,7 @@ private void handleDeleteRequisition() {
                         JOptionPane.INFORMATION_MESSAGE);
 
                 logSystemAction(SystemLog.ACTION_DELETE, "Deleted purchase requisition: " + requisitionId);
-                loadRequisitions(); // Refresh the table
+                loadRequisitions(); 
 
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this,

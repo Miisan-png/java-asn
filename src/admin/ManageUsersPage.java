@@ -260,7 +260,7 @@ public class ManageUsersPage extends UIBase {
         buttonsPanel.setBackground(Color.WHITE);
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
     
-        JButton filterBtn = new JButton("Filter by: All Users ▼");
+        JButton filterBtn = new JButton("Filter Users : ▼");
         styleButton(filterBtn);
         createFilterPopup(filterBtn);
         buttonsPanel.add(filterBtn);

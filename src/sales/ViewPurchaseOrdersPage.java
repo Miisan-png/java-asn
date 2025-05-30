@@ -1,4 +1,4 @@
-// sales/ViewPurchaseOrdersPage.java
+
 package sales;
 
 import admin.UIBase;
@@ -52,7 +52,7 @@ public class ViewPurchaseOrdersPage extends UIBase {
             if (ordersList == null) {
                 ordersList = new ArrayList<>();
             }
-            filterOrders(null); // Load all initially
+            filterOrders(null); 
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -74,16 +74,16 @@ public class ViewPurchaseOrdersPage extends UIBase {
     private void filterOrders(String status) {
         tableModel.setRowCount(0);
         for (PurchaseOrder order : ordersList) {
-            // Sales Manager should only see orders related to their requisitions,
-            // but there's no direct link in the PurchaseOrder model to the Sales Manager ID.
-            // Assuming for this assignment, Sales Manager can view all POs as read-only.
+            
+            
+            
             if (order != null && (status == null || order.getStatus().equals(status))) {
                 try {
                     Object[] rowData = {
                             order.getOrderId(),
                             order.getRequisitionId(),
                             order.getItemCode(),
-                            order.getSupplierId(), // Supplier Code as per UI [cite: 138]
+                            order.getSupplierId(), 
                             Integer.valueOf(order.getQuantity()),
                             order.getStatus()
                     };
@@ -265,11 +265,11 @@ public class ViewPurchaseOrdersPage extends UIBase {
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Read-only access for Sales Manager
+                return false; 
             }
             @Override
             public Class<?> getColumnClass(int column) {
-                if (column == 4) { // Quantity
+                if (column == 4) { 
                     return Integer.class;
                 }
                 return String.class;
@@ -283,7 +283,7 @@ public class ViewPurchaseOrdersPage extends UIBase {
         ordersTable.setRowHeight(30);
         ordersTable.setGridColor(Color.LIGHT_GRAY);
 
-        // Optional: Add cell renderer for status coloring as in admin view
+        
         ordersTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -291,13 +291,13 @@ public class ViewPurchaseOrdersPage extends UIBase {
 
                 if (!isSelected) {
                     try {
-                        String status = (String) table.getValueAt(row, 5); // Status column index
+                        String status = (String) table.getValueAt(row, 5); 
                         if (PurchaseOrder.STATUS_COMPLETED.equals(status)) {
-                            c.setBackground(new Color(230, 255, 230)); // Light green
+                            c.setBackground(new Color(230, 255, 230)); 
                         } else if (PurchaseOrder.STATUS_CANCELLED.equals(status)) {
-                            c.setBackground(new Color(255, 230, 230)); // Light red
-                        } else { // Pending
-                            c.setBackground(new Color(255, 255, 230)); // Light yellow
+                            c.setBackground(new Color(255, 230, 230)); 
+                        } else { 
+                            c.setBackground(new Color(255, 255, 230)); 
                         }
                     } catch (Exception e) {
                         c.setBackground(Color.WHITE);
@@ -321,7 +321,7 @@ public class ViewPurchaseOrdersPage extends UIBase {
         createFilterPopup(filterBtn);
         buttonsPanel.add(filterBtn);
 
-        // No "Add", "Edit", "Delete" buttons as per UI design [cite: 138]
+        
 
         contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
@@ -364,7 +364,7 @@ public class ViewPurchaseOrdersPage extends UIBase {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(180, 40)); // Adjusted size
+        button.setPreferredSize(new Dimension(180, 40)); 
     }
 
     private void goBackToDashboard() {

@@ -1,4 +1,4 @@
-// Complete ManageItemsPage.java with all fixes
+
 package sales;
 
 import database.DatabaseHelper;
@@ -244,12 +244,12 @@ public class ManageItemsPage extends UIBase {
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                // Make only Stock Quantity and Price per unit editable
+                
                 return column == 3 || column == 4;
             }
             @Override
             public Class<?> getColumnClass(int column) {
-                if (column == 3 || column == 4) { // Stock Quantity and Price per unit
+                if (column == 3 || column == 4) { 
                     return Object.class;
                 }
                 return String.class;
@@ -267,10 +267,10 @@ public class ManageItemsPage extends UIBase {
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // FIXED: Use GridLayout to ensure all buttons are visible
-        JPanel buttonsPanel = new JPanel(new GridLayout(1, 4, 15, 0)); // 1 row, 4 columns, 15px gap
+        
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 4, 15, 0)); 
         buttonsPanel.setBackground(Color.WHITE);
-        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 0, 50)); // Add side margins
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 0, 50)); 
 
         JButton addButton = new JButton("Add Item");
         styleButton(addButton);
@@ -300,11 +300,11 @@ public class ManageItemsPage extends UIBase {
     private void styleButton(JButton button) {
         button.setBackground(new Color(120, 120, 120));
         button.setForeground(Color.WHITE);
-        button.setFont(new Font("SansSerif", Font.BOLD, 12)); // Slightly smaller font
+        button.setFont(new Font("SansSerif", Font.BOLD, 12)); 
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15)); // Smaller padding
+        button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15)); 
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(120, 35)); // Smaller button size
+        button.setPreferredSize(new Dimension(120, 35)); 
     }
 
     private void goBackToDashboard() {
@@ -372,7 +372,7 @@ public class ManageItemsPage extends UIBase {
 
                 JOptionPane.showMessageDialog(this, "Item added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 logSystemAction(SystemLog.ACTION_CREATE, "Added new item: " + newItemCode);
-                loadItems(); // Refresh the table
+                loadItems(); 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Please enter valid numbers for stock quantity and price.", "Input Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException | IllegalArgumentException ex) {
@@ -436,7 +436,7 @@ public class ManageItemsPage extends UIBase {
                 dbHelper.updateItem(updatedItem);
                 JOptionPane.showMessageDialog(this, "Item updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 logSystemAction(SystemLog.ACTION_UPDATE, "Updated item: " + itemCode);
-                loadItems(); // Refresh the table
+                loadItems(); 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Please enter valid numbers for stock quantity and price.", "Input Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException | IllegalArgumentException ex) {
@@ -472,7 +472,7 @@ public class ManageItemsPage extends UIBase {
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
                 logSystemAction(SystemLog.ACTION_DELETE, "Deleted item: " + itemCode);
-                loadItems(); // Refresh the list
+                loadItems(); 
             } catch (IOException | IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(this,
                         "Error deleting item: " + ex.getMessage(),
@@ -487,7 +487,7 @@ public class ManageItemsPage extends UIBase {
             DatabaseHelper dbHelper = new DatabaseHelper();
             boolean hasChanges = false;
             
-            // Iterate through all rows in the table to check for any edited values
+            
             for (int row = 0; row < tableModel.getRowCount(); row++) {
                 String itemCode = (String) tableModel.getValueAt(row, 0);
                 String itemName = (String) tableModel.getValueAt(row, 1);
@@ -499,27 +499,27 @@ public class ManageItemsPage extends UIBase {
                     int stockQuantity = 0;
                     double pricePerUnit = 0.0;
                     
-                    // Parse stock quantity
+                    
                     if (stockQtyObj instanceof Integer) {
                         stockQuantity = (Integer) stockQtyObj;
                     } else if (stockQtyObj instanceof String) {
                         stockQuantity = Integer.parseInt((String) stockQtyObj);
                     }
                     
-                    // Parse price per unit
+                    
                     if (priceObj instanceof Double) {
                         pricePerUnit = (Double) priceObj;
                     } else if (priceObj instanceof String) {
                         String priceStr = (String) priceObj;
-                        // Remove any formatting (like currency symbols)
+                        
                         priceStr = priceStr.replaceAll("[^0-9.]", "");
                         pricePerUnit = Double.parseDouble(priceStr);
                     }
                     
-                    // Create updated item object
+                    
                     Item updatedItem = new Item(itemCode, itemName, supplierId, stockQuantity, pricePerUnit);
                     
-                    // Update in database
+                    
                     dbHelper.updateItem(updatedItem);
                     hasChanges = true;
                     
@@ -538,7 +538,7 @@ public class ManageItemsPage extends UIBase {
                     "Save Complete", 
                     JOptionPane.INFORMATION_MESSAGE);
                 logSystemAction(SystemLog.ACTION_UPDATE, "Saved all item changes");
-                loadItems(); // Refresh the table to show current data
+                loadItems(); 
             } else {
                 JOptionPane.showMessageDialog(this, 
                     "No changes detected to save.", 
@@ -561,7 +561,7 @@ public class ManageItemsPage extends UIBase {
         }
     }
 
-    // FIXED: Added the missing logSystemAction method
+    
     private void logSystemAction(String action, String details) {
         try {
             DatabaseHelper db = new DatabaseHelper();

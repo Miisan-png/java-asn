@@ -52,7 +52,7 @@ public class ViewPurchaseOrderListPage extends UIBase {
             if (ordersList == null) {
                 ordersList = new ArrayList<>();
             }
-            filterOrders(null); // Load all initially
+            filterOrders(null); 
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -261,11 +261,11 @@ public class ViewPurchaseOrderListPage extends UIBase {
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Read-only access for Sales Manager
+                return false; 
             }
             @Override
             public Class<?> getColumnClass(int column) {
-                if (column == 4) { // Quantity
+                if (column == 4) { 
                     return Integer.class;
                 }
                 return String.class;
@@ -286,13 +286,13 @@ public class ViewPurchaseOrderListPage extends UIBase {
 
                 if (!isSelected) {
                     try {
-                        String status = (String) table.getValueAt(row, 5); // Status column index
+                        String status = (String) table.getValueAt(row, 5); 
                         if (PurchaseOrder.STATUS_COMPLETED.equals(status)) {
-                            c.setBackground(new Color(230, 255, 230)); // Light green
+                            c.setBackground(new Color(230, 255, 230)); 
                         } else if (PurchaseOrder.STATUS_CANCELLED.equals(status)) {
-                            c.setBackground(new Color(255, 230, 230)); // Light red
-                        } else { // Pending
-                            c.setBackground(new Color(255, 255, 230)); // Light yellow
+                            c.setBackground(new Color(255, 230, 230)); 
+                        } else { 
+                            c.setBackground(new Color(255, 255, 230)); 
                         }
                     } catch (Exception e) {
                         c.setBackground(Color.WHITE);
@@ -316,7 +316,7 @@ public class ViewPurchaseOrderListPage extends UIBase {
         createFilterPopup(filterBtn);
         buttonsPanel.add(filterBtn);
 
-        // No "Add", "Edit", "Delete" buttons as per UI design [cite: 138]
+        
 
         contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
@@ -359,7 +359,7 @@ public class ViewPurchaseOrderListPage extends UIBase {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(180, 40)); // Adjusted size
+        button.setPreferredSize(new Dimension(180, 40)); 
     }
 
     private void goBackToDashboard() {

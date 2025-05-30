@@ -83,14 +83,14 @@ public class StockHistoryPage extends admin.UIBase {
     }
 
     private String extractItemCodeFromDetails(String details) {
-        // Assuming the item code is mentioned in the details, you can extract it using regex or string manipulation
-        // Modify this method based on the actual format of the details string
+        
+        
         return details.split(" ")[2];
     }
 
     private int extractQuantityFromDetails(String details) {
-        // Assuming the quantity is mentioned in the details, you can extract it using regex or string manipulation
-        // Modify this method based on the actual format of the details string
+        
+        
         String[] parts = details.split(" ");
         return Integer.parseInt(parts[parts.length - 2]);
     }

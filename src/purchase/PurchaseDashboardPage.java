@@ -139,7 +139,7 @@ JLabel userLabel = new JLabel(displayName + " ▾");
         new purchase.ViewPurchaseRequisitionsPage(currentUser).setVisible(true);
     })); 
     
-    // Fixed this card - removed undefined parameters
+    
     contentPanel.add(createCard("Manage\nPurchase\nOrders", () -> {
         dispose();
         new purchase.ManagePurchaseOrdersPage(currentUser).setVisible(true);

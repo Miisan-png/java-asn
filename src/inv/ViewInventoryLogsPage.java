@@ -27,7 +27,7 @@ public class ViewInventoryLogsPage extends UIBase {
         root.setBackground(Color.WHITE);
         root.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Header
+        
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(Color.WHITE);
 
@@ -45,7 +45,7 @@ public class ViewInventoryLogsPage extends UIBase {
         topPanel.add(title, BorderLayout.CENTER);
         root.add(topPanel, BorderLayout.NORTH);
 
-        // Table
+        
         tableModel = new DefaultTableModel(new Object[]{"Log ID", "Username", "Action", "Details", "Timestamp"}, 0);
         logTable = new JTable(tableModel);
         logTable.setFillsViewportHeight(true);

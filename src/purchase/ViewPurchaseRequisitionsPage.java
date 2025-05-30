@@ -125,7 +125,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
 
         System.out.println("Loading all requisitions (ignoring filter) - list size: " + requisitionsList.size());
 
-        // Show all requisitions regardless of status
+        
         for (PurchaseRequisition requisition : requisitionsList) {
             if (requisition != null) {
                 try {
@@ -137,21 +137,21 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
                             if (item != null) {
                                 itemName = item.getItemName();
                             } else {
-                                itemName = ""; // Default if item not found
+                                itemName = ""; 
                             }
                         } catch (Exception e) {
-                            itemName = ""; // Default on error
+                            itemName = ""; 
                         }
                     }
 
-                    // Format date 
+                    
                     String dateStr = "";
                     LocalDate requiredDate = requisition.getRequiredDate();
                     if (requiredDate != null) {
                         try {
                             dateStr = requiredDate.format(displayDateFormatter);
                         } catch (Exception e) {
-                            // If formatting fails, use toString() as fallback
+                            
                             dateStr = requiredDate.toString();
                         }
                     }
@@ -178,7 +178,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
 
         System.out.println("Table now has " + tableModel.getRowCount() + " rows");
 
-        // refreh
+        
         if (requisitionsTable != null) {
             requisitionsTable.revalidate();
             requisitionsTable.repaint();
@@ -345,12 +345,12 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Make sure we have a table model
+        
         if (tableModel == null) {
             initTableModel();
         }
 
-        // Create table with the model
+        
         requisitionsTable = new JTable(tableModel);
         requisitionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         requisitionsTable.getTableHeader().setBackground(new Color(240, 240, 240));
@@ -358,15 +358,15 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         requisitionsTable.setRowHeight(30);
         requisitionsTable.setGridColor(Color.LIGHT_GRAY);
 
-        // Set column widths to ensure visibility
-        requisitionsTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // PR ID
-        requisitionsTable.getColumnModel().getColumn(1).setPreferredWidth(80);  // Item Code
-        requisitionsTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Item Name
-        requisitionsTable.getColumnModel().getColumn(3).setPreferredWidth(80);  // Quantity
-        requisitionsTable.getColumnModel().getColumn(4).setPreferredWidth(120); // Required Date
-        requisitionsTable.getColumnModel().getColumn(5).setPreferredWidth(80);  // Status
+        
+        requisitionsTable.getColumnModel().getColumn(0).setPreferredWidth(80);  
+        requisitionsTable.getColumnModel().getColumn(1).setPreferredWidth(80);  
+        requisitionsTable.getColumnModel().getColumn(2).setPreferredWidth(150); 
+        requisitionsTable.getColumnModel().getColumn(3).setPreferredWidth(80);  
+        requisitionsTable.getColumnModel().getColumn(4).setPreferredWidth(120); 
+        requisitionsTable.getColumnModel().getColumn(5).setPreferredWidth(80);  
 
-        // color coding 
+        
         requisitionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -374,17 +374,17 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
 
                 if (!isSelected) {
                     try {
-                        if (column == 5) { // Status column
+                        if (column == 5) { 
                             String status = value != null ? value.toString() : "";
                             if ("Approved".equals(status)) {
-                                c.setBackground(new Color(230, 255, 230)); // Light green
-                                c.setForeground(new Color(0, 100, 0));     // Dark green
+                                c.setBackground(new Color(230, 255, 230)); 
+                                c.setForeground(new Color(0, 100, 0));     
                             } else if ("Rejected".equals(status)) {
-                                c.setBackground(new Color(255, 230, 230)); // Light red
-                                c.setForeground(new Color(180, 0, 0));     // Dark red
-                            } else { // Pending
-                                c.setBackground(new Color(255, 255, 230)); // Light yellow
-                                c.setForeground(new Color(180, 100, 0));   // Orange/brown
+                                c.setBackground(new Color(255, 230, 230)); 
+                                c.setForeground(new Color(180, 0, 0));     
+                            } else { 
+                                c.setBackground(new Color(255, 255, 230)); 
+                                c.setForeground(new Color(180, 100, 0));   
                             }
                         } else {
                             c.setBackground(Color.WHITE);
@@ -399,13 +399,13 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
             }
         });
 
-        // Put the table in a scroll pane
+        
         JScrollPane scrollPane = new JScrollPane(requisitionsTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        scrollPane.setPreferredSize(new Dimension(600, 400)); // Set preferred size
+        scrollPane.setPreferredSize(new Dimension(600, 400)); 
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // No filter button or button panel
+        
 
         return contentPanel;
     }

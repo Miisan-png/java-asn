@@ -1,4 +1,4 @@
-// sales/SalesSystemLogsPage.java
+
 package sales;
 
 import admin.UIBase;
@@ -54,7 +54,7 @@ public class SalesSystemLogsPage extends UIBase {
             tableModel.setRowCount(0);
 
             for (SystemLog log : allLogs) {
-                // Sales Manager should only see logs related to their actions
+                
                 if (log.getUserId().equals(currentUser.getUserId())) {
                     tableModel.addRow(new Object[]{
                             log.getLogId(),
@@ -284,9 +284,9 @@ public class SalesSystemLogsPage extends UIBase {
         refreshButton.setForeground(Color.WHITE);
         refreshButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         refreshButton.setFocusPainted(false);
-        refreshButton.setBorder(BorderFactory.createEmptyBorder(8, 25, 8, 25)); // Better padding
+        refreshButton.setBorder(BorderFactory.createEmptyBorder(8, 25, 8, 25)); 
         refreshButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        refreshButton.setPreferredSize(new Dimension(110, 35)); // Slightly wider
+        refreshButton.setPreferredSize(new Dimension(110, 35)); 
         refreshButton.addActionListener(e -> loadLogs());
         
         rightPanel.add(refreshButton);
@@ -380,11 +380,11 @@ public class SalesSystemLogsPage extends UIBase {
 
 
         try {
-            // Filter based on current user and selected action/search text
-            List<SystemLog> dbLogs = new DatabaseHelper().getAllSystemLogs(); // Get fresh logs
+            
+            List<SystemLog> dbLogs = new DatabaseHelper().getAllSystemLogs(); 
             List<SystemLog> filteredList = dbLogs.stream()
                     .filter(log ->
-                            log.getUserId().equals(currentUser.getUserId()) && // Only show logs for the current user
+                            log.getUserId().equals(currentUser.getUserId()) && 
                                     (searchText.isEmpty() ||
                                             log.getLogId().toLowerCase().contains(searchText) ||
                                             log.getDetails().toLowerCase().contains(searchText)) &&
@@ -426,7 +426,7 @@ public class SalesSystemLogsPage extends UIBase {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(150, 40)); // Adjusted size
+        button.setPreferredSize(new Dimension(150, 40)); 
     }
 
     private void goBackToDashboard() {
