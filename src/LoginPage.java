@@ -58,7 +58,7 @@ public class LoginPage extends UIBase {
         });
     }
 
-  @Override
+    @Override
 protected void initUI() {
     JPanel rootPanel = new JPanel(new BorderLayout(10, 10));
     rootPanel.setBackground(Color.WHITE);
@@ -141,6 +141,24 @@ protected void initUI() {
     forgotLabel.setForeground(primaryColor);
     forgotLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
     forgotLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    
+    // Add forgot password functionality
+    forgotLabel.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            showForgotPasswordDialog();
+        }
+        
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            forgotLabel.setText("<html><u>Forgot Username or Password?</u></html>");
+        }
+        
+        @Override
+        public void mouseExited(MouseEvent e) {
+            forgotLabel.setText("Forgot Username or Password?");
+        }
+    });
 
     JLabel createAccountLabel = new JLabel("<html>Create an Account</html>");
     createAccountLabel.setFont(smallLinkFont);
@@ -244,6 +262,75 @@ protected void initUI() {
                     JOptionPane.ERROR_MESSAGE);
         }
     });
+}
+
+
+private void showForgotPasswordDialog() {
+    JDialog forgotDialog = new JDialog(this, "Forgot Password", true);
+    forgotDialog.setLayout(new BorderLayout());
+    forgotDialog.setSize(400, 200);
+    forgotDialog.setLocationRelativeTo(this);
+    
+    JPanel contentPanel = new JPanel(new GridBagLayout());
+    contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(5, 5, 5, 5);
+    gbc.anchor = GridBagConstraints.WEST;
+    
+    JLabel instructionLabel = new JLabel("Enter your email or username:");
+    instructionLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+    gbc.gridx = 0; gbc.gridy = 0;
+    gbc.gridwidth = 2;
+    contentPanel.add(instructionLabel, gbc);
+    
+    JTextField emailField = new JTextField(20);
+    emailField.setFont(inputFont);
+    emailField.setBorder(INPUT_FIELD_BORDER);
+    gbc.gridx = 0; gbc.gridy = 1;
+    gbc.gridwidth = 2;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    contentPanel.add(emailField, gbc);
+    
+    JButton sendButton = new JButton("Send Request");
+    sendButton.setBackground(primaryColor);
+    sendButton.setForeground(Color.WHITE);
+    sendButton.setFont(buttonTextFont);
+    gbc.gridx = 0; gbc.gridy = 2;
+    gbc.gridwidth = 1;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.insets = new Insets(15, 5, 5, 5);
+    contentPanel.add(sendButton, gbc);
+    
+    JButton cancelButton = new JButton("Cancel");
+    cancelButton.setFont(buttonTextFont);
+    gbc.gridx = 1; gbc.gridy = 2;
+    contentPanel.add(cancelButton, gbc);
+    
+    forgotDialog.add(contentPanel, BorderLayout.CENTER);
+    
+    sendButton.addActionListener(e -> {
+        String emailOrUsername = emailField.getText().trim();
+        if (emailOrUsername.isEmpty()) {
+            JOptionPane.showMessageDialog(forgotDialog,
+                    "Please enter your email or username.",
+                    "Missing Information",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        JOptionPane.showMessageDialog(forgotDialog,
+                "Password reset request sent successfully!\nPlease check your email for further instructions.",
+                "Request Sent",
+                JOptionPane.INFORMATION_MESSAGE);
+        forgotDialog.dispose();
+    });
+    
+    cancelButton.addActionListener(e -> forgotDialog.dispose());
+    
+    emailField.addActionListener(e -> sendButton.doClick());
+    
+    forgotDialog.setVisible(true);
 }
 
     public static void main(String[] args) {

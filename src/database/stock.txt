@@ -8,4 +8,4 @@ ITEM006,Extra Virgin Olive Oil 500ml,60,Pantry Storage,2025-05-25,In Stock
 ITEM007,Red Apples 1kg,140,Fresh Produce,2025-05-31,In Stock
 ITEM008,Greek Yogurt 200g,45,Cold Storage B,2025-05-25,In Stock
 ITEM009,Fresh Prawns 500g,8,Freezer Section,2025-05-25,Low Stock
-ITEM010,Whole Wheat Bread,35,Bakery Section,2025-05-25,In Stock
+ITEM010,Whole Wheat Bread,5,Bakery Section,2025-05-25,In Stock

@@ -6,3 +6,6 @@ LOG004,FIN001,finance_manager,Update,Marked PO002 as Paid - Red Apples purchase,
 LOG005,INV001,inventory_manager,Update,Updated stock levels for Fresh Prawns - Low Stock Alert,2025-05-27 08:45:00,INV
 LOG006,SAL001,sales_manager,Create,Created sales entry for Fresh Milk - 15 units sold,2025-05-25 16:30:00,SAL
 LOG1748640019980,FIN001,finance_manager,ViewlogS,Opened FinanceGenerateReportsPage,2025-05-31 05:20:19,FIN
+LOG1748693586510,SAL001,s,Create,Created purchase requisition: REQ1748693584360,2025-05-31 20:13:06,SAL
+LOG1748693752191,SAL001,s,Update,Updated item: ITEM010,2025-05-31 20:15:52,SAL
+LOG1748693974209,SAL001,s,Update,Updated item: ITEM008,2025-05-31 20:19:34,SAL

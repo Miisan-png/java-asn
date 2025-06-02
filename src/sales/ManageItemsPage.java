@@ -61,21 +61,62 @@ public class ManageItemsPage extends UIBase {
         }
     }
 
-    private void updateTable(List<Item> items) {
-        tableModel.setRowCount(0);
-        for (Item item : items) {
-            if (item != null) {
-                Object[] rowData = {
-                        item.getItemCode(),
-                        item.getItemName(),
-                        item.getSupplierId(),
-                        item.getStockQuantity(), 
-                        String.format("%.2f", item.getPricePerUnit()) 
-                };
-                tableModel.addRow(rowData);
-            }
+   private void updateTable(List<Item> items) {
+    tableModel.setRowCount(0);
+    for (Item item : items) {
+        if (item != null) {
+            Object[] rowData = {
+                    item.getItemCode(),
+                    item.getItemName(),
+                    item.getSupplierId(),
+                    item.getStockQuantity(), 
+                    String.format("%.2f", item.getPricePerUnit()) 
+            };
+            tableModel.addRow(rowData);
         }
     }
+    
+    itemsTable.setDefaultRenderer(Object.class, new javax.swing.table.DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, 
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            
+            Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            
+            Object stockObj = table.getValueAt(row, 3);
+            int stockQuantity = 0;
+            
+            try {
+                if (stockObj instanceof Integer) {
+                    stockQuantity = (Integer) stockObj;
+                } else if (stockObj instanceof String) {
+                    stockQuantity = Integer.parseInt((String) stockObj);
+                }
+            } catch (NumberFormatException e) {
+                stockQuantity = 0;
+            }
+            
+            if (stockQuantity < 10) {
+                if (isSelected) {
+                    component.setBackground(new Color(220, 100, 100)); // Darker red for selected
+                } else {
+                    component.setBackground(new Color(255, 200, 200)); // Light red for normal
+                }
+                component.setForeground(Color.BLACK);
+            } else {
+                if (isSelected) {
+                    component.setBackground(table.getSelectionBackground());
+                    component.setForeground(table.getSelectionForeground());
+                } else {
+                    component.setBackground(Color.WHITE);
+                    component.setForeground(Color.BLACK);
+                }
+            }
+            
+            return component;
+        }
+    });
+}
 
     @Override
     protected void initUI() {
